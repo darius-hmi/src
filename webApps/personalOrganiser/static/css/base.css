@@ -1,0 +1,246 @@
+.message-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-sender {
+    background-color: #adaef1; /* Light green for sender's messages */
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 70%;
+    align-self: flex-end; /* Aligns sender's messages to the right */
+    margin-bottom: 5px; /* Adds space between messages */
+}
+
+.message-receiver {
+    background-color: #f0b3f0; /* Light grey for receiver's messages */
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 70%;
+    align-self: flex-start; /* Aligns receiver's messages to the left */
+    margin-bottom: 5px; /* Adds space between messages */
+}
+
+.message-input-container {
+    display: flex;
+    align-items: center; /* Align items vertically in the center */
+}
+
+.message-input-container input[type="text"],
+.message-input-container textarea {
+    flex-grow: 1; /* Grow to take up remaining space */
+    margin-right: 10px; /* Add spacing between input and button */
+    height: 40px; /* Set the height as needed */
+}
+
+.message-input-container button {
+    flex-shrink: 0; /* Prevent button from shrinking */
+    height: 40px; /* Set the height as needed */
+}
+
+.message-background-container {
+    /* Add styles for the container, like width, height, etc. */
+    background-image: url('/static/images/msg_bckgd.jpg');
+    background-size: cover; /* Adjust the background size */
+    background-position: center; /* Center the background image */
+}
+
+.container {
+    width: 100%;
+}
+.card-body p {
+    white-space: pre-line;
+}
+.link-section {
+    border-radius: 10px;
+    margin-bottom: 20px; /* Add margin between sections */
+    padding: 0px;
+    width: 100%; /* Make the link section full width */
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center align the items */
+    flex-direction: column; /* Align items vertically */
+    text-align: center;
+}
+.food-section, .exercise-section, .todo-section, .posts-section {
+    text-align: center; /* Center align text */
+    margin-bottom: 20px; /* Add margin between sections */
+}
+.food-section {
+    background-color: #99114c; /* Light orange background */
+    display: flex;
+    align-items: center;
+}
+.exercise-section {
+    background-color: #6C5B7B; /* Light purple background */
+    display: flex;
+    align-items: center;
+}
+.todo-section {
+    background-color: #C06C84; /* Light pink background */
+    display: flex;
+    align-items: center;
+}
+.post-section {
+    background-color: #355C7D; /* Light blue background */
+    display: flex;
+    align-items: center;
+}
+
+.section-heading {
+    margin-top: 50px; /* Adjust margin-top as needed */
+    margin-bottom: 50px;
+    text-align: center; /* Align text to the center */
+}
+
+.section-heading h1 {
+    font-size: 40px; /* Adjust font size as needed */
+}
+
+
+.food-image {
+    margin-right: auto; /* Move the image to the right */
+    width: 30%; /* Adjust the size of the image as needed */
+    margin-left: 20px; /* Add space between image and content */
+}
+
+.food-content {
+    width: 70%; /* Adjust the width of the content */
+}
+
+.exercise-image {
+    margin-left: auto; /* Move the image to the right */
+    width: 30%; /* Adjust the size of the image as needed */
+    margin-right: 20px; /* Add space between image and content */
+}
+
+.exercise-content {
+width: 70%; /* Adjust the width of the content */
+}
+
+.todo-image {
+    margin-right: auto; /* Move the image to the right */
+    width: 30%; /* Adjust the size of the image as needed */
+    margin-left: 20px; /* Add space between image and content */
+}
+
+.todo-content {
+    width: 70%; /* Adjust the width of the content */
+}
+
+.post-image {
+    margin-left: auto; /* Move the image to the right */
+    width: 30%; /* Adjust the size of the image as needed */
+    margin-right: 20px; /* Add space between image and content */
+}
+
+.post-content {
+    width: 70%; /* Adjust the width of the content */
+}
+
+.full-width {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+body {
+    font-family: "Century Gothic", serif;
+}
+
+/* Add a media query for screens smaller than 768px (typical mobile devices) */
+@media screen and (max-width: 768px) {
+    .food-section, .exercise-section, .todo-section, .post-section {
+        flex-direction: column; /* Stack the content vertically on smaller screens */
+    }
+    .food-content, .exercise-content, .todo-content, .post-content {
+        width: 100%; /* Make the content occupy full width */
+        text-align: center; /* Center align the content */
+    }
+    .food-image, .exercise-image, .todo-image, .post-image {
+        width: 100%; /* Set the width to 100% to make images occupy the full width of the container */
+        margin: 0; /* Remove any margin */
+    }
+    .food-section .food-content,
+    .exercise-section .exercise-content,
+    .todo-section .todo-content,
+    .post-section .post-content {
+        order: 2; /* Set the order of the content to 2, pushing it below the image */
+    }
+    .food-section .food-image,
+    .exercise-section .exercise-image,
+    .todo-section .todo-image,
+    .post-section .post-image {
+        order: 1; /* Set the order of the image to 1, making it appear above the content */
+    }
+}
+/* Adjust font size of day names */
+.fc-daygrid-day-number {
+    font-size: 24px; /* Adjust as needed */
+}
+.fc-daygrid-day-events {
+    min-height: 100px !important;/* Adjust as needed */
+    
+}
+.fc-event-title-container {
+    background-color: #99114c; /* Adjust as needed */
+    padding: 2px;
+    text-align: center;
+}
+.fc-event-title {
+    font-size: 20px; /* Adjust as needed */
+}
+/* Make the calendar view smaller */
+#calendar {
+    width: 65%; /* Adjust the width as needed */
+    margin: 0 auto; /* Center the calendar */
+}
+/* Media query for smaller screens */
+@media only screen and (max-width: 768px) {
+    #calendar {
+        width: 100%; /* Full width on small screens */
+    }
+    .fc-daygrid-day-number {
+        font-size: 12px; /* Adjust as needed */
+    }
+    .fc-event-title {
+        font-size: 10px; /* Adjust as needed */
+    }
+}
+.chart-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.chart-wrapper {
+    flex: 1 1 300px;
+    max-width: 500px; /* Limit the maximum width on larger screens */
+    padding: 10px;
+    box-sizing: border-box;
+}
+canvas {
+    width: 100% !important;
+    height: auto !important;
+}
+.form-container {
+    text-align: center;
+}
+.form-table {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center items vertically */
+}
+
+.meal-plans-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.meal-plan {
+    flex: 0 0 calc(33.33% - 20px); /* Adjust the percentage to your liking */
+    margin: 10px;
+    /* Additional styling for each meal plan */
+}
+
+/* Add other CSS styles for your elements */

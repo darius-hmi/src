@@ -1,0 +1,102 @@
+{% extends 'main/base.html' %}
+{% block title %}Exercise Diary{% endblock %}
+{% block content %}
+<form method="post" action="/exerciseDiary" id="exercise-diary-form" class="form-container">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" name="save">Go</button>
+</form>
+<table style="width:100%; text-align:center">
+    <tr>
+        <th>Exercise</th>
+        <th>Body Part</th>
+        <th>Weight</th>
+        <th>Sets</th>
+        <th>Reps</th>
+        <th>Date and Time</th>
+        <th>
+            <a id="add-exercise-entry-btn" class="btn btn-success">Add Exercise Entry</a>
+        </th>
+    </tr>
+    {% for exercise in todaysExercises %}
+    <tr>
+        <td>{{ exercise.name }}</td>
+        <td>{{ exercise.muscle }}</td>
+        <td id="weight-{{ exercise.id }}">{{ exercise.weight }}</td>
+        <td id="sets-{{ exercise.id }}">{{ exercise.sets }}</td>
+        <td id="reps-{{ exercise.id }}">{{ exercise.reps }}</td>
+        <td>{{ exercise.created_at }}</td>
+        <td>
+            <button type="button" class="btn btn-primary" onclick="editExercise('{{ exercise.id }}')">Edit</button>
+            <form method="post" style="display:inline">
+                {% csrf_token %}
+                <input type="hidden" name="form-type" value="delete-form">
+                <button type="submit" class="btn btn-danger" name="exercise-id" value="{{ exercise.id }}" onclick="deleteExercise('{{ exercise.id }}')">Delete</button>
+            </form>
+            <form method="post" style="display:none;" id="edit-form-{{ exercise.id }}">
+                {% csrf_token %}
+                <input type="hidden" name="form-type" value="edit-form">
+                <input type="hidden" name="exercise-id" value="{{ exercise.id }}">
+                <input type="number" name="weight" value="{{ exercise.weight }}" placeholder="Weight">
+                <input type="number" name="sets" value="{{ exercise.sets }}" placeholder="Sets">
+                <input type="number" name="reps" value="{{ exercise.reps }}" placeholder="Reps">
+                <button type="submit" class="btn btn-success">Save</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelEdit('{{ exercise.id }}')">Cancel</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+function editExercise(exerciseId) {
+    var selectedDate = document.getElementById('id_date').value;
+    sessionStorage.setItem('selectedDate', selectedDate);
+    document.getElementById('edit-form-' + exerciseId).style.display = 'inline';
+    
+}
+
+function cancelEdit(exerciseId) {
+    document.getElementById('edit-form-' + exerciseId).style.display = 'none';
+}
+
+function deleteExercise(exerciseId) {
+    // Save the selected date in session storage before deleting the exercise
+    var selectedDate = document.getElementById('id_date').value;
+    sessionStorage.setItem('selectedDate', selectedDate);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var selectedDate = sessionStorage.getItem('selectedDate');
+    if (selectedDate) {
+        var formattedDate = selectedDate.split('/').reverse().join('-');
+        document.getElementById('id_date').value = formattedDate;
+        sessionStorage.removeItem('selectedDate');
+        document.getElementById('exercise-diary-form').submit();
+    }
+});
+document.addEventListener('DOMContentLoaded', function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var date = urlParams.get('date');
+    if (date) {
+        document.getElementById('id_date').value = date;
+    }
+});
+document.addEventListener('DOMContentLoaded', function() {
+    var addExerciseBtn = document.getElementById('add-exercise-entry-btn');
+    var dateInput = document.getElementById('id_date');
+    
+    if (addExerciseBtn && dateInput) {
+        addExerciseBtn.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default link behavior
+            
+            var dateValue = dateInput.value;
+            if (dateValue) {
+                var url = '/exerciseDiary/add/' + dateValue + '/';
+                window.location.href = url; // Redirect to the desired URL
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

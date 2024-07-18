@@ -1,0 +1,167 @@
+{% extends 'main/base.html' %}
+{% block title %}Add food{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<form method="POST", class="form-container">
+    {% csrf_token %}
+    <table class="form-table" style="width: 100%;">
+        {{form.as_table}}
+    </table>
+    <button type="submit" class="btn btn-success">Post</button>
+</form>
+<script>
+// Define arrays in the global scope
+var chestExercises = [
+    'Flat barbell bench press',
+    'Incline barbell bench press',
+    'Flat dumbbell Bench Press',
+    'Incline dumbbell press low angle',
+    'Incline dumbbell press high angle',
+    'Dumbbell flyes',
+    'Cable flyes',
+    'Machine flyes',
+    'Machine Chest Press'
+];
+
+var shoulderExercises = [
+    'Dumbbell shoulder press',
+    'Barbell Dumbbell press',
+    'Cable lateral raises',
+    'Dumbbell lateral raises',
+    'Dumbbell Front Raises',
+    'Cable Front Raises',
+    'Front Raises',
+    'Rear Delt Machine',
+    'Rear Delt Dumbbell',
+    'Machine shoulder press',
+    'Traps raises'
+];
+
+var legExercises = [
+    'Squats',
+    'Leg press',
+    'Leg extension',
+    'Leg curls',
+    'Bulgarian split squats',
+    'Romanian deadlift'
+];
+
+var backExercises = [
+    'Barbell Bent over row',
+    'Rope Pulldown',
+    'Deadlift',
+    'Lat pulldown straight bar',
+    'Lat pulldown close grip',
+    'Cable row wide',
+    'Cable row narrow',
+    'Single arm lat pulldown',
+    'Machine Row',
+    'pull ups'
+];
+
+var armExercises = [
+    'Bicep curls',
+    'Hammer curls',
+    'Cable bicep curls',
+    'Cable hammer curl',
+    'Cable tricep extension',
+    'Bar tricep extension',
+    'Overhead extension',
+    'Dips',
+    'underhand lat pulldown'
+];
+
+document.getElementById('id_name').addEventListener('change', function() {
+    var selectedExercise = this.value;
+    var muscleSelect = document.getElementById('id_muscle');
+
+    // Check if the muscle group is null before updating
+    if (!muscleSelect.value) {
+        var muscle = getMuscleGroup(selectedExercise);
+        muscleSelect.value = muscle;
+
+        // Dispatch the change event only if the muscle group was originally null
+        muscleSelect.dispatchEvent(new Event('change'));
+    }
+});
+
+
+document.getElementById('id_muscle').addEventListener('change', function() {
+    var selectedMuscle = this.value;
+    var exerciseSelect = document.getElementById('id_name');
+    
+    // Store the selected exercise name
+    var selectedExercise = exerciseSelect.value;
+
+    exerciseSelect.innerHTML = ''; // Clear existing options
+    
+    // Create a default option
+    var defaultOption = document.createElement('option');
+    defaultOption.text = 'Select Exercise';
+    defaultOption.value = '';
+    exerciseSelect.appendChild(defaultOption);
+    
+    // Choose appropriate exercises based on the selected muscle group
+    var exercises = [];
+    if (selectedMuscle === '') {
+        // If muscle group is null, add all exercises
+        exercises = [].concat(chestExercises, shoulderExercises, legExercises, backExercises, armExercises);
+    } else {
+        switch(selectedMuscle) {
+            case 'Chest':
+                exercises = chestExercises;
+                break;
+            case 'Shoulder':
+                exercises = shoulderExercises;
+                break;
+            case 'Legs':
+                exercises = legExercises;
+                break;
+            case 'Back':
+                exercises = backExercises;
+                break;
+            case 'Arms':
+                exercises = armExercises;
+                break;
+            default:
+                break;
+        }
+    }
+
+    exercises.forEach(function(exercise) {
+        var option = document.createElement('option');
+        option.text = exercise;
+        option.value = exercise;
+        exerciseSelect.appendChild(option);
+    });
+
+    // Check if the previously selected exercise is in the new list
+    if (exercises.includes(selectedExercise)) {
+        // If it is, reselect it
+        exerciseSelect.value = selectedExercise;
+    } else {
+        // If it's not, default to 'Select Exercise'
+        exerciseSelect.value = '';
+    }
+});
+
+function getMuscleGroup(exercise) {
+    // Define a function to get the muscle group based on the exercise name
+    // Add your logic to determine the muscle group for each exercise
+    // This is a simple example, you may need to adjust it based on your actual data
+    if (chestExercises.includes(exercise)) {
+        return 'Chest';
+    } else if (shoulderExercises.includes(exercise)) {
+        return 'Shoulder';
+    } else if (legExercises.includes(exercise)) {
+        return 'Legs';
+    } else if (backExercises.includes(exercise)) {
+        return 'Back';
+    } else if (armExercises.includes(exercise)) {
+        return 'Arms';
+    } else {
+        return ''; // Default to empty string if muscle group is unknown
+    }
+};
+</script>
+{% endblock %}

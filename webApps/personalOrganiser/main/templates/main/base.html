@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    {%load static%}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    <title>{% block title %}My Site{% endblock %}</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+         <div class="container-fluid">
+             <a class="navbar-brand" href="#">Elite Fit Plan</a>
+             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                 <span class="navbar-toggler-icon"></span>
+             </button>
+             <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                 <ul class="navbar-nav">
+                     <li class="nav-item">
+                         <a class="nav-link" href="/home">Home</a>
+                     </li>
+                     <li class="nav-item">
+                         <a class="nav-link" href="/create-post">Post</a>
+                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link" href="/create-food">Food Hub</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link" href="/addExercise">Exercuse Hub</a>
+                    </li>
+                     <!-- <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="foodDropdownLink" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Food
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="foodDropdownLink">
+                            <a class="dropdown-item" href="/create-food">Add Food</a>
+                            <a class="dropdown-item" href="/todaysFood">Today's Food</a>
+                            <a class="dropdown-item" href="/foodDiary">Food Diary</a>
+                        </div>
+                    </li> -->
+                    <!-- <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="exerciseDropdownLink" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Exercise
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="exerciseDropdownLink">
+                            <a class="dropdown-item" href="/addExercise">Add Exercise</a>
+                            <a class="dropdown-item" href="/exerciseDiary">Exercise Diary</a>
+                        </div>
+                    </li> -->
+                    <li class="nav-item dropdown">
+                        <!-- Add a dropdown with additional items -->
+                        <a class="nav-link dropdown-toggle" href="#" id="reminderDropdownLink" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Reminder
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="reminderDropdownLink">
+                            <a class="dropdown-item" href="/addToDoList">Add To Do List</a>
+                            <a class="dropdown-item" href="/toDoList">To Do List</a>
+                            <!-- Add more dropdown items as needed -->
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/threads">Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/budget">Budgets</a>
+                    </li>
+                 </ul>
+                 <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">Profile |</a>
+                    </li>
+                    <span class="navbar-text">Logged in as {{user.username}} | </span>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    {% endif %}
+                 </ul>
+             </div>
+         </div>
+     </nav>
+     <div class="container-fluid full-width">
+         {% block content %}
+         {% endblock %}
+     </div>
+ 
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+ </body>
+</html>

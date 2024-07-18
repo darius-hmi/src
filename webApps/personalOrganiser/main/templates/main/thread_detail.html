@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %}
+{% block title %}Conversation{% endblock %}
+{% block content %}
+<div class="message-background-container">
+    <div class="message-container">
+        {% for message in messages %}
+        {% if message.sender == request.user %}
+        <div class="message-sender">{{ message.sender }}: {{ message.content }}</div>
+        {% else %}
+        <div class="message-receiver">{{ message.sender }}: {{ message.content }}</div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="message-input-container">
+            {{ form.content }}
+            <button type="submit">Send</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

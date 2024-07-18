@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+{% block title %}Profile{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div style="text-align: center">
+    <h3>Please provide the below personal details to enhance the user experience</h3>
+</div>
+<div>
+    <form method="POST", class="form-container">
+        {% csrf_token %}
+        <table class="form-table" style="width: 100%;">
+            {{form.as_table}}
+        </table>
+        <button type="submit" class="btn btn-success">Save</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+<!-- templates/main/budget.html -->
+
+{% extends 'main/base.html' %}
+{% block title %}Budget{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>Budget</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Add Expense</button>
+    </form>
+    <h3>Your Expenses</h3>
+    <table class="table" id="expense-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Day of the Month</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in expenses %}
+            <tr>
+                <td>{{ expense.name }}</td>
+                <td class="amount">£{{ expense.amount }}</td>
+                <td>{{ expense.date.day }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td><strong>Total</strong></td>
+                <td id="total-expenses"><strong>£0</strong></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function calculateTotal() {
+            let total = 0;
+            document.querySelectorAll('#expense-table .amount').forEach(function(amountCell) {
+                total += parseFloat(amountCell.textContent.replace('£', ''));
+            });
+            document.getElementById('total-expenses').innerHTML = `<strong>£${total.toFixed(2)}</strong>`;
+        }
+        calculateTotal();
+    });
+</script>
+{% endblock %}

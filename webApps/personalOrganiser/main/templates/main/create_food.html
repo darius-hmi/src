@@ -1,0 +1,170 @@
+{% extends 'main/base.html' %}
+{% block title %}Add food{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<div class="row", style="text-align:center">
+    <div class="col-md-6">
+        <h2>Add Food</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <table class="form-table" style="width: 100%;">
+                {{form.as_table}}
+            </table>
+            <button type="submit" name="action" value="create_food" class="btn btn-success">Post</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <h2>Food Lookup</h2>
+        <form id="food-lookup-form" method="post">
+            {% csrf_token %}
+            <label for="food_id">Enter Food Name:</label>
+            <input type="text" name="food_id" id="food_id">
+            <button type="submit" name="action" value="food_lookup">Lookup</button>
+        </form>
+
+        {% if food_info %}
+            <h3>Food Information: (per 100g/100ml)</h3>
+            <ul>
+                <li>Name: {{ food_info.name }}</li>
+                <li>Calories: {{ food_info.calories }} kcal</li>
+                <li>Protein: {{ food_info.protein }} g</li>
+                <!-- Add other relevant nutrient information here -->
+            </ul>
+            {% if food_info.image_url %}
+                <img src="{{ food_info.image_url }}" alt="{{ food_info.name }}">
+            {% endif %}
+        {% endif %}
+
+        {% if error_message %}
+            <p>{{ error_message }}</p>
+        {% endif %}
+    </div>
+</div>
+<div style="text-align:center">
+    <h2>Today's Food</h2>
+    <div style="text-align: right; margin-bottom: 10px;">
+    </div>
+    <table style="width:100%">
+        <tr>
+            <th>Food</th>
+            <th>Calories</th>
+            <th>Protein</th>
+            <th>Date and Time</th>
+            <th><a href="{% url 'foodDiary' %}" class="btn btn-primary">View other dates</a></th>
+        </tr>
+        {% for food in todaysFoods %}
+        <tr>
+            <td>{{ food.name }}</td>
+            <td>{{ food.calories }}</td>
+            <td>{{ food.protein }}</td>
+            <td>{{ food.created_at }}</td>
+            <td>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_food">
+                    <button type="submit" class="btn btn-danger" name="food-id" value="{{ food.id }}">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <th>Total</th>
+            <th>{{ totalCalories }}</th>
+            <th>{{ totalProtein }}</th>
+        </tr>
+    </table>
+</div>
+
+
+<div class="chart-container">
+    <div class="chart-wrapper">
+        <canvas id="caloriesChart"></canvas>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="proteinChart"></canvas>
+    </div>
+</div>
+  
+  
+  
+  <!-- Hidden elements to store the JSON data -->
+  <div id="totalCalories" style="display: none;">{{ totalCalories|default:0 }}</div>
+  <div id="totalCaloriesGoal" style="display: none;">{{ totalCaloriesGoal|default:0 }}</div>
+  <div id="totalProtein" style="display: none;">{{ totalProtein|default:0 }}</div>
+  <div id="totalProteinGoal" style="display: none;">{{ totalProteinGoal|default:0 }}</div>
+
+
+<div style="text-align:center">
+    <a href="{% url 'meal_plan_page' %}">View Meal Plans</a>
+</div>
+  
+  <script>
+  window.onload = function() {
+      const totalCalories = JSON.parse(document.getElementById('totalCalories').textContent);
+      const totalCaloriesGoal = JSON.parse(document.getElementById('totalCaloriesGoal').textContent);
+      const totalProtein = JSON.parse(document.getElementById('totalProtein').textContent);
+      const totalProteinGoal = JSON.parse(document.getElementById('totalProteinGoal').textContent);
+  
+      const caloriesChartCtx = document.getElementById('caloriesChart').getContext('2d');
+      const proteinChartCtx = document.getElementById('proteinChart').getContext('2d');
+  
+      new Chart(caloriesChartCtx, {
+          type: 'pie',
+          data: {
+              labels: ['Calories Consumed', 'Calories Remaining'],
+              datasets: [{
+                  data: [totalCalories, Math.max(0, totalCaloriesGoal - totalCalories)],
+                  backgroundColor: ['#FF6384', '#36A2EB'],
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              title: {
+                  display: true,
+                  text: 'Calories Consumption'
+              }//, add the below if you want to add percentage
+              // plugins: {
+              //     legend: {
+              //         display: true,
+              //     },
+              //     tooltip: {
+              //         callbacks: {
+              //             label: function(context) {
+              //                 let label = context.label || '';
+              //                 if (label) {
+              //                     label += ': ';
+              //                 }
+              //                 label += Math.round(context.parsed * 100) + '%';
+              //                 return label;
+              //             }
+              //         }
+              //     }
+              // }
+          }
+      });
+  
+      new Chart(proteinChartCtx, {
+          type: 'pie',
+          data: {
+              labels: ['Protein Consumed', 'Protein Remaining'],
+              datasets: [{
+                  data: [totalProtein, Math.max(0, totalProteinGoal - totalProtein)],
+                  backgroundColor: ['#FF6384', '#36A2EB'],
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              title: {
+                  display: true,
+                  text: 'Protein Consumption'
+              }
+          }
+      });
+  };
+</script>
+{% endblock %}

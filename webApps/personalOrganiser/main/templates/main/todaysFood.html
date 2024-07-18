@@ -1,0 +1,33 @@
+{% extends 'main/base.html' %}
+{% block title %}Add food{% endblock %}
+{% block content %}
+
+<table style="width:100%">
+    <tr>
+      <th>Food</th>
+      <th>Calories</th>
+      <th>Protein</th>
+      <th>Date and Time</th>
+      <th></th>
+    </tr>
+    {% for food in todaysFoods %}
+    <tr>
+      <td>{{food.name}}</td>
+      <td>{{food.calories}}</td>
+      <td>{{food.protein}}</td>
+      <td>{{food.created_at}}</td>
+      <td>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" name="food-id" value="{{food.id}}">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <th>Total</th>
+        <th>{{totalCalories}}</th>
+        <th>{{totalProtein}}</th>
+    </tr>
+  </table>
+{% endblock %}

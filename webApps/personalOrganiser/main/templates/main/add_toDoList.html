@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+{% block title %}To Do List{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <table class="form-table" style="width: 100%;">
+        {{form.as_table}}
+    </table>
+    <button type="submit" class="btn btn-success">Add</button>
+</form>
+{% endblock %}

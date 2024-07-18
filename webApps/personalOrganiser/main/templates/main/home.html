@@ -1,0 +1,92 @@
+{% extends 'main/base.html' %} 
+{% block title %}Home Page{% endblock %} 
+{% block content %}
+
+
+<!-- Section for Posts -->
+<!-- <section id="posts-section" class="link-section full-width posts-section">
+  <h2>Latest Posts</h2>
+  {% for post in posts %}
+    <div class="card mb-3" style="width: 100%;">
+      <div class="card-header"><strong>@{{ post.author.username }}</strong></div>
+      <div class="card-body">
+        <h5 class="card-title">{{ post.title }}</h5>
+        <p class="card-text">{{ post.description|linebreaks }}</p>
+        <div class="d-flex justify-content-between">
+          {% if user == post.author %}
+            <form method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger" name="post-id" value="{{ post.id }}">Delete</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card-footer text-muted">{{ post.created_at }}</div>
+    </div>
+  {% empty %}
+    <p>No posts yet :(</p>
+  {% endfor %}
+</section> -->
+
+<!-- Section for Links -->
+<section id="links-section" class="link-section full-width">
+  <div class="section-heading">
+    <h1>Stay organised, keep it simple</h1>
+  </div>
+
+  <div class="quick-links-section">
+    <div class="quick-links-heading">
+      <h3>Quick Links</h3>
+    </div>
+    <div class="quick-links-content">
+      <a href="/create-food" class="btn btn-secondary">Food Hub</a>
+      <a href="/addExercise" class="btn btn-secondary">Exercise Hub</a>
+      <a href="/addToDoList" class="btn btn-secondary">Reminders</a>
+    </div>
+  </div>
+  <!-- Food Link Section -->
+  <div class="food-section">
+    <div class="food-content">
+      <h1>Food</h3>
+      <h2>This is to keep track of your daily food intake. This will keep a record so you can check back as you wish.</h2>
+      <h2>You can also check a weekly analysis of your diet, including some recommendations according to your gender, height, weight, body fat and your goal.<i><b> (This feature has not yet been implemented)</b></i></h2>
+      <a href="/create-food" class="btn btn-primary">Explore Food</a>
+    </div>
+    <img src="/static/images/food.jpg" alt="Food" class="food-image">
+  </div>
+
+  
+  <!-- Exercise Link Section -->
+  <div class="exercise-section">
+    <img src="/static/images/exercise.jpg" alt="Exercise" class="exercise-image">
+    <div class="exercise-content">
+      <h1>Exercise</h3>
+      <h2>In here, you can track your exercises and gym workouts. It will keep a record of your workouts.</h2>
+      <h2>You will receive weekly and monthly analysis of your workouts, including the volume that you trained each muscle group.<i><b> (This feature has not yet been implemented)</b></i></h2>
+      <a href="/addExercise" class="btn btn-primary">Explore Exercise</a>
+    </div>
+  </div>
+  
+  <div class="todo-section">
+    <div class="todo-content">
+      <h1>To Do</h3>
+      <h2>Why not keep your fitness reminders, or any other reminders you want in here where you can keep a track of it?</h2>
+      <h2>You can opt to receive a message or an email reminder a day before something is due<i><b> (This feature has not yet been implemented)</b></i></h2>
+      <a href="/toDoList" class="btn btn-primary">View To Do List</a>
+    </div>
+    <img src="/static/images/reminder.jpg" alt="to do" class="todo-image">
+  </div>
+  
+  <div class="post-section">
+    <img src="/static/images/social.jpg" alt="social" class="post-image">
+    <div class="post-content">
+      <h1>Social</h3>
+      <h2>Maybe post about your recent fitness achievement here, or ask other users for advice.</h2>
+      <h2>You can post a picture, video or just text. Other can comment about your posts. All users can see other users' post and can message them as they wish. (no hidding)<i><b> (This feature has not yet been implemented)</b></i></h2>
+      <a href="/create-post" class="btn btn-primary">Go to the social section</a>
+    </div>
+    
+  </div>
+
+</section>
+{% endblock %}
