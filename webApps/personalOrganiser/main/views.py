@@ -38,12 +38,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 
-#      _      ____    ___ 
-#     / \    |  _ \  |_ _|
-#    / _ \   | |_) |  | | 
-#   / ___ \  |  __/   | | 
-#  /_/   \_\ |_|     |___|
-
+#API code below
 
 class toDoListViewSet(viewsets.ModelViewSet):
     queryset = toDoList.objects.all()
@@ -97,11 +92,11 @@ class foodViewSet(viewsets.ModelViewSet):
 
 
 
-#   _____                          _                                _ 
-#  |  ___|  _ __    ___    _ __   | |_            ___   _ __     __| |
-#  | |_    | '__|  / _ \  | '_ \  | __|  _____   / _ \ | '_ \   / _` |
-#  |  _|   | |    | (_) | | | | | | |_  |_____| |  __/ | | | | | (_| |
-#  |_|     |_|     \___/  |_| |_|  \__|          \___| |_| |_|  \__,_|
+
+
+
+
+#Webapp backend
 
 
 @login_required(login_url='/login')
