@@ -176,8 +176,8 @@ if __name__ == "__main__":
     model = build_and_train_model(X_train, y_train)
 
     # Example input for prediction
-    home_team = 'Chelsea'
-    away_team = 'Manchester City'
+    home_team = 'Leicester City'
+    away_team = 'Tottenham Hotspur'
 
     # Predict match result
     predicted_outcome = predict_match_result(model, scaler, label_encoder_home, label_encoder_away, home_stats, away_stats, home_team, away_team)
