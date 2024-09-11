@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post, Food, Exercise, toDoList, Message, Profile, Meal, MealPlan, Expense
+from .models import Post, Food, Exercise, toDoList, Message, Profile, Meal, MealPlan, Expense, ShoppingCategory, ShoppingItem
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -73,3 +73,14 @@ class ExpenseForm(forms.ModelForm):
             'date': forms.NumberInput(attrs={'min': 1, 'max': 31}),
         }
         labels = {'date': 'day of the month'}
+
+
+class ShoppingCategoryForm(forms.ModelForm):
+    class Meta:
+        model = ShoppingCategory
+        fields = ['name']
+
+class ShoppingItemForm(forms.ModelForm):
+    class Meta:
+        model = ShoppingItem
+        fields = ['name']

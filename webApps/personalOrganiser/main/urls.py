@@ -43,7 +43,13 @@ frontend_urlpatterns = [
     path('meal-plans/<int:meal_plan_id>/delete/', views.delete_meal_plan, name='delete_meal_plan'),
     path('meal-plans/<int:meal_plan_id>/meals/<int:meal_id>/delete/', views.delete_meal, name='delete_meal'),
     path('budget/', views.budget_page, name='budget_page'),
-    # Add other front-end views as needed
+    path('recipes/', views.recipe_page, name='recipe_page'),
+    path('shopping-list/', views.shopping_list_page, name='shopping_list_page'),
+    path('shopping-list/add-category/', views.shopping_add_category, name='add_category'),
+    path('shopping-list/add-item/', views.shopping_add_item, name='add_item'),
+    path('shopping-list/toggle-item/<int:item_id>/', views.shopping_toggle_item, name='toggle_item'),
+    path('shopping-list/delete-category/<int:category_id>/', views.shopping_delete_category, name='delete_category'),
+    path('shopping-list/clear-all-shopping-items/', views.clear_all_shopping_items, name='clear_all_items'),
 ]
 
 # Combine both sets of URLs

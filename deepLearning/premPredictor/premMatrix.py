@@ -145,14 +145,10 @@ def build_and_train_model(X_train, y_train):
     return model
 
 def predict_match_result(model, scaler, label_encoder_home, label_encoder_away, home_stats, away_stats, home_team, away_team):
-    """Predict the match result for given teams."""
+    """Predict the match result for given teams and display the probability of the predicted outcome."""
     # Encode team names
     home_team_encoded = label_encoder_home.transform([home_team])[0]
     away_team_encoded = label_encoder_away.transform([away_team])[0]
-
-    # Get the mean statistics for the home and away teams
-    home_team_mean = home_stats[home_stats['Home'] == home_team].iloc[0]
-    away_team_mean = away_stats[away_stats['Away'] == away_team].iloc[0]
 
     # Prepare the feature vector for the prediction
     example_match = pd.DataFrame({
@@ -224,19 +220,19 @@ def predict_match_result(model, scaler, label_encoder_home, label_encoder_away, 
         'Away_Dist': [away_stats.loc[away_team_encoded, 'Away_Dist']]
     })
 
-
     # Normalize example match data
     example_match_scaled = scaler.transform(example_match)
 
     # Predict
     predictions = model.predict(example_match_scaled)
     predicted_result = np.argmax(predictions[0])
+    predicted_probability = predictions[0][predicted_result]  # Probability of the predicted outcome
 
     # Map result to outcome
     result_map = {0: 'Draw', 1: 'Home Win', 2: 'Away Win'}
     predicted_outcome = result_map[predicted_result]
 
-    return predicted_outcome
+    return predicted_outcome, predicted_probability
 
 # Main workflow
 if __name__ == "__main__":
@@ -250,10 +246,11 @@ if __name__ == "__main__":
     model = build_and_train_model(X_train, y_train)
 
     # Example input for prediction
-    home_team = 'Liverpool'
-    away_team = 'Brentford'
+    home_team = 'Southampton'
+    away_team = 'Manchester Utd'
 
     # Predict match result
-    predicted_outcome = predict_match_result(model, scaler, label_encoder_home, label_encoder_away, home_stats, away_stats, home_team, away_team)
+
+    predicted_outcome, predicted_probability = predict_match_result(model, scaler, label_encoder_home, label_encoder_away, home_stats, away_stats, home_team, away_team)
     
-    print(f"Predicted result for {home_team} vs. {away_team}: {predicted_outcome}")
+    print(f"Predicted result for {home_team} vs. {away_team}: {predicted_outcome} with probability {predicted_probability:.2f}")

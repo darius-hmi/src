@@ -189,3 +189,28 @@ class Expense(models.Model):
     def __str__(self):
         return f'{self.name} - {self.amount}'
 
+
+class ShoppingList(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.name
+
+class ShoppingCategory(models.Model):
+    shopping_list = models.ForeignKey(ShoppingList, related_name='categories', on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+class ShoppingItem(models.Model):
+    category = models.ForeignKey(ShoppingCategory, related_name='items', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    is_checked = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+

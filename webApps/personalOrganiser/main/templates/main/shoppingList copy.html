@@ -1,0 +1,220 @@
+{% extends 'main/base.html' %}
+{% block title %}Shopping List{% endblock %}
+{% block content %}
+
+<div class="shopping-list-container">
+    <div class="header">
+        <h1>Shopping List</h1>
+        <p>Organize your shopping by category and see all items in one place</p>
+    </div>
+
+    <!-- Sections for Different Categories -->
+    <div class="shopping-sections">
+        <!-- Meat Section -->
+        <div class="section">
+            <h3>Meat</h3>
+            <ul id="meat-items" class="item-list"></ul>
+            <div class="add-item">
+                <input type="text" id="new-meat-item" placeholder="Add meat item">
+                <button onclick="addItem('meat')">Add</button>
+            </div>
+        </div>
+
+        <!-- Fruits & Veg Section -->
+        <div class="section">
+            <h3>Fruits & Veg</h3>
+            <ul id="fruits-veg-items" class="item-list"></ul>
+            <div class="add-item">
+                <input type="text" id="new-fruits-veg-item" placeholder="Add fruits & veg item">
+                <button onclick="addItem('fruits-veg')">Add</button>
+            </div>
+        </div>
+
+        <!-- Dairy Section -->
+        <div class="section">
+            <h3>Dairy</h3>
+            <ul id="dairy-items" class="item-list"></ul>
+            <div class="add-item">
+                <input type="text" id="new-dairy-item" placeholder="Add dairy item">
+                <button onclick="addItem('dairy')">Add</button>
+            </div>
+        </div>
+
+        <!-- Other Section -->
+        <div class="section">
+            <h3>Other</h3>
+            <ul id="other-items" class="item-list"></ul>
+            <div class="add-item">
+                <input type="text" id="new-other-item" placeholder="Add other item">
+                <button onclick="addItem('other')">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Centralized Combined List -->
+    <div class="combined-list">
+        <h3>All Items</h3>
+        <ul id="all-items" class="central-list">
+            <!-- This list will be populated with all items -->
+        </ul>
+    </div>
+</div>
+
+<!-- JavaScript for adding items to sections and combined list with strikethrough functionality -->
+<script>
+    function addItem(section) {
+        let inputId, ulId;
+        switch (section) {
+            case 'meat':
+                inputId = 'new-meat-item';
+                ulId = 'meat-items';
+                break;
+            case 'fruits-veg':
+                inputId = 'new-fruits-veg-item';
+                ulId = 'fruits-veg-items';
+                break;
+            case 'dairy':
+                inputId = 'new-dairy-item';
+                ulId = 'dairy-items';
+                break;
+            case 'other':
+                inputId = 'new-other-item';
+                ulId = 'other-items';
+                break;
+            default:
+                return;
+        }
+
+        const itemText = document.getElementById(inputId).value;
+        if (itemText.trim() !== '') {
+            const li = document.createElement('li');
+            li.textContent = itemText;
+            li.addEventListener('click', function() {
+                this.classList.toggle('checked');
+            });
+            document.getElementById(ulId).appendChild(li);
+            updateCombinedList(itemText);
+            document.getElementById(inputId).value = '';
+        }
+    }
+
+    function updateCombinedList(itemText) {
+        const li = document.createElement('li');
+        li.textContent = itemText;
+        li.addEventListener('click', function() {
+            this.classList.toggle('checked');
+        });
+        document.getElementById('all-items').appendChild(li);
+    }
+</script>
+
+<style>
+    .shopping-list-container {
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .shopping-sections {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .section {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .section h3 {
+        margin-top: 0;
+        color: #333;
+    }
+
+    .item-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin-bottom: 20px;
+    }
+
+    .item-list li {
+        padding: 5px 0;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+    }
+
+    .item-list li:last-child {
+        border-bottom: none;
+    }
+
+    .item-list li.checked {
+        text-decoration: line-through;
+        color: #888;
+    }
+
+    .add-item {
+        display: flex;
+    }
+
+    .add-item input[type="text"] {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+
+    .add-item button {
+        padding: 10px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .add-item button:hover {
+        background-color: #2980b9;
+    }
+
+    .combined-list {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .combined-list h3 {
+        margin-top: 0;
+        color: #333;
+        text-align: center;
+    }
+
+    .central-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 0 auto;
+        max-width: 400px;
+    }
+
+    .central-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .central-list li:last-child {
+        border-bottom: none;
+    }
+
+    .central-list li.checked {
+        text-decoration: line-through;
+        color: #888;
+    }
+</style>
+
+{% endblock %}

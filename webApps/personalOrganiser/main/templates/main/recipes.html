@@ -1,0 +1,117 @@
+{% extends 'main/base.html' %}
+{% block title %}Recipes{% endblock %}
+{% block content %}
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Hub</title>
+    <style>
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .card a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .card a:hover {
+            text-decoration: underline;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #333;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Recipe Hub</h1>
+        <p>Find delicious recipes and meal ideas</p>
+    </div>
+
+    <div class="container">
+        <!-- Generated Meal Card -->
+        <div class="card">
+            <h3>Today's Generated Meal</h3>
+            <p><strong>Grilled Chicken Salad</strong></p>
+            <p>A healthy and delicious grilled chicken salad with fresh greens, cherry tomatoes, and a light vinaigrette dressing.</p>
+            <p>Calories: 350 | Protein: 30g | Carbs: 20g | Fats: 15g</p>
+        </div>
+
+        <!-- Recipe Link Card 1 -->
+        <div class="card">
+            <h3>BBC Good Food</h3>
+            <p>Explore a wide range of delicious recipes from BBC Good Food.</p>
+            <a href="https://www.bbcgoodfood.com" target="_blank">Visit BBC Good Food</a>
+        </div>
+
+        <!-- Recipe Link Card 2 -->
+        <div class="card">
+            <h3>AllRecipes</h3>
+            <p>Find recipes, cooking tips, and meal ideas from AllRecipes.</p>
+            <a href="https://www.allrecipes.com" target="_blank">Visit AllRecipes</a>
+        </div>
+
+        <!-- Recipe Link Card 3 -->
+        <div class="card">
+            <h3>Delish</h3>
+            <p>Get inspired with mouth-watering recipes from Delish.</p>
+            <a href="https://www.delish.com" target="_blank">Visit Delish</a>
+        </div>
+
+        <!-- Recipe Link Card 4 -->
+        <div class="card">
+            <h3>Food Network</h3>
+            <p>Discover great recipes and culinary inspiration from Food Network.</p>
+            <a href="https://www.foodnetwork.com" target="_blank">Visit Food Network</a>
+        </div>
+    </div>
+</body>
+
+</html>
+
+{% endblock %}

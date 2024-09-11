@@ -5,6 +5,29 @@
 <head>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active mx-5">
+                <a class="nav-link" href="{% url 'foodDiary' %}">Food Diary</a>
+            </li>
+            <li class="nav-item active mx-5">
+                <a class="nav-link" href="{% url 'meal_plan_page' %}">Meal Plans</a>
+            </li>
+            <li class="nav-item active mx-5">
+                <a class="nav-link" href="{% url 'recipe_page' %}">Recipes</a>
+            </li>
+            <li class="nav-item active mx-5">
+                <a class="nav-link" href="{% url 'shopping_list_page' %}">Shopping List</a>
+            </li>
+            <!-- Add more links as needed -->
+        </ul>
+    </div>
+</nav>
+
+
 <div class="row", style="text-align:center">
     <div class="col-md-6">
         <h2>Add Food</h2>

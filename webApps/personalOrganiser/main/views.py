@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import RegisterForm, PostForm, FoodForm, datePicker, ExerciseForm, toDoForm, MessageForm, ProfileForm, MealForm, MealPlanForm, ExpenseForm
+from .forms import RegisterForm, PostForm, FoodForm, datePicker, ExerciseForm, toDoForm, MessageForm, ProfileForm, MealForm, MealPlanForm, ExpenseForm, ShoppingCategoryForm, ShoppingItemForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from .models import Post, Food, Exercise, toDoList, Message, Thread, Profile, MealPlan, Meal, Expense
+from django.views.decorators.http import require_POST
+from .models import Post, Food, Exercise, toDoList, Message, Thread, Profile, MealPlan, Meal, Expense, ShoppingItem, ShoppingCategory, ShoppingList
 from datetime import datetime, time, date as dt_date
 from django.db.models import Sum, Count
 from django.core.mail import send_mail
@@ -20,7 +21,9 @@ from rest_framework.response import Response
 from .serializers import toDoListSerializer, expenseSerializer, exerciseSerializer, foodSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.contrib import messages
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -570,4 +573,88 @@ def budget_page(request):
     expenses = Expense.objects.filter(user=request.user)
     return render(request, 'main/budget.html', {'form': form, 'expenses': expenses})
 
-#end of the code, test
+
+@login_required(login_url='/login')
+def recipe_page(request):
+    return render(request, 'main/recipes.html')
+
+
+@login_required(login_url='/login')
+def shopping_list_page(request):
+    shopping_list, _ = ShoppingList.objects.get_or_create(user=request.user, name='My Shopping List')
+    categories = shopping_list.categories.all()
+    all_items = ShoppingItem.objects.filter(category__in=categories)
+
+    category_form = ShoppingCategoryForm()
+    item_form = ShoppingItemForm()
+
+    return render(request, 'main/shoppingList.html', {
+        'shopping_list': shopping_list,
+        'categories': categories,
+        'all_items': all_items,
+        'category_form': category_form,
+        'item_form': item_form,
+    })
+
+@login_required(login_url='/login')
+def shopping_add_category(request):
+    if request.method == 'POST':
+        form = ShoppingCategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.shopping_list = ShoppingList.objects.get(user=request.user, name='My Shopping List')
+            category.save()
+            messages.success(request, 'Category added successfully.')
+        else:
+            messages.error(request, 'There was an error with your submission.')
+        
+    return redirect('shopping_list_page')
+
+
+@login_required(login_url='/login')
+def shopping_add_item(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        form = ShoppingItemForm(data)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.category = ShoppingCategory.objects.get(id=data['category_id'])
+            item.save()
+            return JsonResponse({'status': 'success', 'item': {'id': item.id, 'name': item.name, 'category': {'id': item.category.id, 'name': item.category.name}}})
+        else:
+            return JsonResponse({'status': 'error', 'errors': form.errors})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+
+@login_required(login_url='/login')
+def shopping_toggle_item(request, item_id):
+    item = get_object_or_404(ShoppingItem, id=item_id)
+    item.is_checked = not item.is_checked
+    item.save()
+    return JsonResponse({'status': 'success', 'is_checked': item.is_checked})
+
+
+@login_required(login_url='/login')
+def shopping_delete_category(request, category_id):
+    if request.method == 'POST':
+        try:
+            category = ShoppingCategory.objects.get(id=category_id, shopping_list__user=request.user)
+            category.delete()
+            return JsonResponse({'status': 'success'})
+        except ShoppingCategory.DoesNotExist:
+            return JsonResponse({'status': 'error', 'errors': 'Category not found'}, status=404)
+    return JsonResponse({'status': 'error', 'errors': 'Invalid request'}, status=400)
+
+
+@login_required(login_url='/login')
+def clear_all_shopping_items(request):
+    if request.method == 'POST':
+        try:
+            shopping_list = ShoppingList.objects.get(user=request.user, name='My Shopping List')
+            ShoppingItem.objects.filter(category__in=shopping_list.categories.all()).delete()
+            return JsonResponse({'status': 'success'})
+        except ShoppingList.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Shopping list not found'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+

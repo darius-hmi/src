@@ -1,6 +1,9 @@
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
+from sklearn.decomposition import PCA
+from sklearn.feature_selection import RFE
+from sklearn.ensemble import RandomForestClassifier
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.saving import save_model
@@ -77,6 +80,19 @@ def prepare_data(file_path, decay_factor=0.1):
 
     return features_scaled, target, label_encoder_home, label_encoder_away, scaler, home_stats, away_stats, feature_columns
 
+def apply_pca(features_scaled, n_components=10):
+    """Apply PCA to reduce dimensionality."""
+    pca = PCA(n_components=n_components)
+    features_pca = pca.fit_transform(features_scaled)
+    return features_pca
+
+def apply_rfe(features, target, n_features_to_select=10):
+    """Apply RFE to select important features."""
+    model = RandomForestClassifier(n_estimators=100)
+    rfe = RFE(model, n_features_to_select=n_features_to_select)
+    rfe.fit(features, target)
+    return rfe
+
 def build_and_train_model(X_train, y_train):
     """Build and train the deep learning model."""
     model = Sequential()
@@ -91,7 +107,7 @@ def build_and_train_model(X_train, y_train):
     save_model(model, 'match_prediction_model.keras')
     return model
 
-def predict_match_result(model, scaler, label_encoder_home, label_encoder_away, home_stats, away_stats, home_team, away_team, feature_columns):
+def predict_match_result(model, scaler, pca, label_encoder_home, label_encoder_away, home_stats, away_stats, home_team, away_team, feature_columns):
     """Predict the match result for given teams."""
     # Encode team names
     home_team_encoded = label_encoder_home.transform([home_team])[0]
@@ -130,8 +146,11 @@ def predict_match_result(model, scaler, label_encoder_home, label_encoder_away, 
     # Normalize example match data
     example_match_scaled = scaler.transform(example_match)
 
+    # Apply PCA to reduce the example match to the same number of features as the training data
+    example_match_pca = pca.transform(example_match_scaled)
+
     # Predict
-    predictions = model.predict(example_match_scaled)
+    predictions = model.predict(example_match_pca)
     predicted_result = np.argmax(predictions[0])
 
     # Map result to outcome
@@ -140,22 +159,39 @@ def predict_match_result(model, scaler, label_encoder_home, label_encoder_away, 
 
     return predicted_outcome
 
+
 # Main workflow
 if __name__ == "__main__":
     # Load and prepare data with decay factor
     features_scaled, target, label_encoder_home, label_encoder_away, scaler, home_stats, away_stats, feature_columns = prepare_data('data/combined_fixtures_with_results.csv', decay_factor=0.1)
 
-    # Split data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(features_scaled, target, test_size=0.2, random_state=42)
+    # Apply PCA for dimensionality reduction
+    pca = PCA(n_components=10)
+    features_pca = pca.fit_transform(features_scaled)
 
+    # Split data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(features_pca, target, test_size=0.2, random_state=42)
+    
     # Build and train the model
     model = build_and_train_model(X_train, y_train)
 
     # Example input for prediction
-    home_team = 'Brighton'
-    away_team = 'Manchester Utd'
+    home_team = 'Manchester Utd'
+    away_team = 'Liverpool'
 
     # Predict match result
-    predicted_outcome = predict_match_result(model, scaler, label_encoder_home, label_encoder_away, home_stats, away_stats, home_team, away_team, feature_columns)
+    predicted_outcome = predict_match_result(
+        model, 
+        scaler, 
+        pca, 
+        label_encoder_home, 
+        label_encoder_away, 
+        home_stats, 
+        away_stats, 
+        home_team, 
+        away_team, 
+        feature_columns  # This argument is essential
+    )
     
     print(f"Predicted result for {home_team} vs. {away_team}: {predicted_outcome}")
+
