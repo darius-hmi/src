@@ -1,0 +1,59 @@
+Predicted probabilities for Acc'ton Stanley vs. Port Vale:
+Home Win: 0.31
+Draw: 0.30
+Away Win: 0.39
+
+Predicted probabilities for Chesterfield vs. Cheltenham:
+Home Win: 0.43
+Draw: 0.29
+Away Win: 0.28
+
+Predicted probabilities for Bradford City vs. AFC Wimbledon:
+Home Win: 0.42
+Draw: 0.30
+Away Win: 0.29
+
+Predicted probabilities for Grimsby Town vs. Bromley:
+Home Win: 0.35
+Draw: 0.30
+Away Win: 0.34
+
+Predicted probabilities for Swindon Town vs. Carlisle United:
+Home Win: 0.43
+Draw: 0.29
+Away Win: 0.28
+
+Predicted probabilities for Salford City vs. Walsall:
+Home Win: 0.48
+Draw: 0.28
+Away Win: 0.24
+
+Predicted probabilities for Notts County vs. Gillingham:
+Home Win: 0.51
+Draw: 0.24
+Away Win: 0.25
+
+Predicted probabilities for Colchester Utd vs. Tranmere Rovers:
+Home Win: 0.35
+Draw: 0.31
+Away Win: 0.34
+
+Predicted probabilities for Barrow vs. Newport County:
+Home Win: 0.38
+Draw: 0.30
+Away Win: 0.31
+
+Predicted probabilities for MK Dons vs. Doncaster:
+Home Win: 0.52
+Draw: 0.27
+Away Win: 0.22
+
+Predicted probabilities for Crewe Alexandra vs. Harrogate:
+Home Win: 0.48
+Draw: 0.27
+Away Win: 0.25
+
+Predicted probabilities for Fleetwood Town vs. Morecambe:
+Home Win: 0.49
+Draw: 0.27
+Away Win: 0.24
