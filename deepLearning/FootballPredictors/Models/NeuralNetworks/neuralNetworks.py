@@ -17,7 +17,7 @@ label_encoder_path = os.path.join(current_dir, 'label_encoder.joblib')
 sys.path.append(os.path.abspath(os.path.join('..', '..', 'data')))
 from cleanAndPrepDataFunctions import prepare_data_for_training, prepare_data_for_training_binary
 
-data = pd.read_csv('../../data/week12.csv')
+data = pd.read_csv('../../data/week13.csv')
 X, y, df, label_encoder = prepare_data_for_training_binary(data)
 
 df.to_csv(processed_data_path, index=False)

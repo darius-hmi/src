@@ -107,7 +107,7 @@ def fetch_and_process_data(season):
     return table1
 
 # List of seasons to process
-seasons = ['2019/2020', '2020/2021', '2021/2022', '2022/2023', '2023/2024', '2024/2025']
+seasons = ['2017/2018', '2018/2019', '2019/2020', '2020/2021', '2021/2022', '2022/2023', '2023/2024', '2024/2025']
 
 all_tables = []
 
@@ -358,5 +358,5 @@ for idx, row in final_table.iterrows():
 
 
 
-final_table.to_csv('week12.csv', index=False)
+final_table.to_csv('week13.csv', index=False)
 print('done.')

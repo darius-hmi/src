@@ -250,9 +250,9 @@ if __name__ == "__main__":
     model = build_and_train_model(X_train, y_train)
 
     # Example input for prediction
-    home_team = 'Wolves'
-    away_team = 'Newcastle Utd'
-    wk = '4'
+    home_team = 'Leicester City'
+    away_team = 'Chelsea'
+    wk = '12'
 
     # Predict match result
 

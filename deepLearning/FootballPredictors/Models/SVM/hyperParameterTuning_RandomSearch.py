@@ -9,14 +9,10 @@ from sklearn.model_selection import RandomizedSearchCV
 import numpy as np
 
 sys.path.append(os.path.abspath(os.path.join('..', '..', 'data')))
-from cleanAndPrepDataFunctions import apply_one_hot_encoder, drop_seaon_col, apply_scoreToResult_01minus1, apply_scoreToResult_012, apply_label_encoder, order_features_and_prepare_target
+from cleanAndPrepDataFunctions import prepare_data_for_training_binary, apply_one_hot_encoder, drop_seaon_col, apply_scoreToResult_01minus1, apply_scoreToResult_012, apply_label_encoder, order_features_and_prepare_target
 
 data = pd.read_csv('../../data/week12.csv')
-data, label_encoder = apply_label_encoder(data)
-data = drop_seaon_col(data)
-data = apply_scoreToResult_012(data)
-
-X, y, df = order_features_and_prepare_target(data)
+X, y, df, label_encoder = prepare_data_for_training_binary(data)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 scaler = StandardScaler()
@@ -30,7 +26,7 @@ svm_model = SVC(random_state=42)
 param_dist = {
     'C': np.logspace(-3, 0, 6),  # A smaller range
     'gamma': ['scale', 'auto'] + np.logspace(-3, 3, 6).tolist(),  # A smaller range
-    'kernel': ['linear'],  # Use only 'rbf' kernel to reduce combinations
+    'kernel': ['linear', 'rbf'],  # Use only 'rbf' kernel to reduce combinations
     'degree': [1,2],  # Only relevant for polynomial kernels
     'coef0': [1,2,3,4,5,6],  # For polynomial or sigmoid kernels, can restrict
 }

@@ -159,9 +159,9 @@ if __name__ == "__main__":
     model = build_and_train_model(X_train, y_train)
 
     # Example input for prediction
-    home_teams = ['Brentford', 'Crystal Palace', 'West Ham', 'Wolves', 'Brighton', 'Liverpool', 'Manchester Utd', 'Nott\'ham Forest', 'Tottenham', 'Chelsea']
-    away_teams = ['Bournemouth', 'Fulham', 'Everton', 'Southampton', 'Manchester City', 'Aston Villa', 'Leicester City', 'Newcastle Utd', 'Ipswich Town', 'Arsenal'] 
-    wk = '11' 
+    home_teams = ['Leicester City', 'Fulham', 'Everton', 'Arsenal', 'Bournemouth', 'Aston Villa']
+    away_teams = ['Chelsea', 'Wolves', 'Brentford', 'Nott\'ham Forest', 'Brighton', 'Crystal Palace'] 
+    wk = '12' 
 
     for home_team, away_team in zip(home_teams, away_teams):
         outcome_labels, predicted_probabilities = predict_match_result(model, scaler, label_encoder_home, label_encoder_away, home_stats, away_stats, home_team, away_team)

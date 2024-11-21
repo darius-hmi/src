@@ -303,9 +303,9 @@ if __name__ == "__main__":
     model = build_and_train_model(X_train, y_train)
 
     # Example input for prediction
-    home_team = 'West Ham'
-    away_team = 'Chelsea'
-    wk = '4'
+    home_team = 'Arsenal'
+    away_team = 'Nott\'ham Forest'
+    wk = '12'
 
     # Predict match result
     outcome_labels, predicted_probabilities = predict_match_result(model, scaler, label_encoder_home, label_encoder_away, home_stats, away_stats, home_team, away_team)

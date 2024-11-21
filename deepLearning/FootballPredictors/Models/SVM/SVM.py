@@ -14,9 +14,9 @@ processed_data_path = os.path.join(current_dir, 'processed_data.csv')
 label_encoder_path = os.path.join(current_dir, 'label_encoder.joblib')
 
 sys.path.append(os.path.abspath(os.path.join('..', '..', 'data')))
-from cleanAndPrepDataFunctions import prepare_data_for_training, prepare_data_for_training_binary
+from cleanAndPrepDataFunctions import prepare_data_for_training, prepare_data_for_training_binary, prepare_data_for_training_oneHot
 
-data = pd.read_csv('../../data/week12.csv')
+data = pd.read_csv('../../data/week13.csv')
 X, y, df, label_encoder = prepare_data_for_training_binary(data)
 
 df.to_csv(processed_data_path, index=False)
@@ -49,6 +49,67 @@ test_accuracy = accuracy_score(y_test, y_pred)
 print(f"SVM Model - Test Accuracy: {test_accuracy}")
 print("Test Classification Report:")
 print(classification_report(y_test, y_pred))
+
+# from sklearn.calibration import calibration_curve
+# import matplotlib.pyplot as plt
+
+# prob_pos = svm_model.predict_proba(X_test_scaled)[:, 1]
+# fraction_of_positives, mean_predicted_value = calibration_curve(y_test, prob_pos, n_bins=10)
+
+# plt.figure(figsize=(10, 10))
+# plt.plot(mean_predicted_value, fraction_of_positives, "s-", label="SVM")
+# plt.plot([0, 1], [0, 1], "k:", label="Perfectly calibrated")
+# plt.xlabel("Mean predicted value")
+# plt.ylabel("Fraction of positives")
+# plt.title('Calibration Curve')
+# plt.legend()
+# plt.show()
+
+
+# # Verify that we have Arsenal matches in the test set
+# arsenal_test_indices = X_test.index[(X_test['Home'] == 1111) | (X_test['Away'] == 1111)]
+# print(arsenal_test_indices)
+
+# # Check the length of the test set
+# print(f"Length of X_test_scaled: {len(X_test_scaled)}")
+
+# # Ensure indices are within bounds
+# valid_indices = [i for i in arsenal_test_indices if i < len(X_test_scaled)]
+# print(f"Valid indices for Arsenal: {valid_indices}")
+
+# # Prediction using valid indices
+# arsenal_y_pred = svm_model.predict(X_test_scaled[valid_indices])
+# arsenal_y_true = y_test.iloc[valid_indices]
+
+# print("Classification Report for Arsenal Matches:")
+# print(classification_report(arsenal_y_true, arsenal_y_pred))
+
+
+
+
+# import matplotlib.pyplot as plt
+# import numpy as np
+
+# # Example: Feature importance (using coef_ for linear models)
+# if hasattr(svm_model, 'coef_'):
+#     feature_importance = np.abs(svm_model.coef_[0])
+# else:
+#     from sklearn.inspection import permutation_importance
+#     result = permutation_importance(svm_model, X_test_scaled, y_test, n_repeats=10, random_state=42)
+#     feature_importance = result.importances_mean
+
+# # Get top 20 features
+# top_n = 20
+# sorted_idx = feature_importance.argsort()[-top_n:][::-1]
+
+# # Plotting
+# plt.figure(figsize=(10, 8))
+# plt.barh(range(top_n), feature_importance[sorted_idx], align='center')
+# plt.yticks(range(top_n), [X.columns[i] for i in sorted_idx])
+# plt.xlabel('Feature Importance')
+# plt.title('Top 20 Feature Importance')
+# plt.gca().invert_yaxis()
+# plt.show()
 
 
 

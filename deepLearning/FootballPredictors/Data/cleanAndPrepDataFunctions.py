@@ -1,5 +1,35 @@
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+import numpy as np
+
+
+class CustomLabelEncoder:
+    def __init__(self, start_value=1111):
+        self.label_encoder = LabelEncoder()
+        self.start_value = start_value
+        self.classes_ = None
+
+    def fit(self, y):
+        self.label_encoder.fit(y)
+        self.classes_ = self.label_encoder.classes_
+        return self
+
+    def transform(self, y):
+        encoded = self.label_encoder.transform(y)
+        return encoded + self.start_value
+
+    def fit_transform(self, y):
+        self.fit(y)
+        return self.transform(y)
+
+    def inverse_transform(self, y):
+        decoded = y - self.start_value
+        return self.label_encoder.inverse_transform(decoded)
+
+    def get_classes(self):
+        return self.classes_
+
+
 
 def order_features_and_prepare_target(df):
     df = df.rename(columns={'xG': 'Home_xG_Base', 'xG.1': 'Away_xG_Base'})
@@ -56,7 +86,7 @@ def apply_scoreToResult_binary(df):
     return df
 
 def apply_label_encoder(df):
-    label_encoder = LabelEncoder()
+    label_encoder = CustomLabelEncoder(start_value=1111)
     all_teams = pd.concat([df['Home'], df['Away']]).unique()
     label_encoder.fit(all_teams)
     df['Home'] = label_encoder.transform(df['Home'])
@@ -94,6 +124,43 @@ def apply_one_hot_encoder(df):
     df.drop(columns=['Home', 'Away'], inplace=True)
     
     return df, label_encoder
+
+def inverse_one_hot_encoder(df, label_encoder):
+    """
+    Inverts one-hot encoding by converting back to "Home" and "Away" columns.
+
+    Args:
+        df (pd.DataFrame): The DataFrame containing one-hot encoded columns.
+        label_encoder (OneHotEncoder): The fitted OneHotEncoder used for encoding.
+
+    Returns:
+        pd.DataFrame: The DataFrame with "Home" and "Away" columns restored.
+    """
+    # Extract one-hot encoded columns specific to home and away teams
+    home_encoded_columns = [col for col in df.columns if col.startswith('Home_Team_')]
+    away_encoded_columns = [col for col in df.columns if col.startswith('Away_Team_')]
+
+    # Ensure the number of encoded columns matches the encoder's feature count
+    if len(home_encoded_columns) != len(label_encoder.get_feature_names_out(['Team'])):
+        raise ValueError("Mismatch between encoded columns and label encoder features.")
+
+    # Extract encoded data for home and away teams
+    home_encoded_data = df[home_encoded_columns].values
+    away_encoded_data = df[away_encoded_columns].values
+
+    # Use inverse_transform to decode back to original team names
+    home_teams = label_encoder.inverse_transform(home_encoded_data)
+    away_teams = label_encoder.inverse_transform(away_encoded_data)
+
+    # Add the decoded "Home" and "Away" columns back to the DataFrame
+    df['Home'] = home_teams.ravel()
+    df['Away'] = away_teams.ravel()
+
+    # Drop the one-hot encoded columns
+    df.drop(columns=home_encoded_columns + away_encoded_columns, inplace=True)
+
+    return df
+
 
 
 def prepare_data_for_training(df):
@@ -171,6 +238,46 @@ def prepare_match_data(df, home_team, away_team, label_encoder):
         **home_stats_row,
         **away_stats_row
     })
+    return match_data
+
+def prepare_match_data_one_hot(df, home_team, away_team, label_encoder):
+
+    home_team_stats = get_last_match_stats(df, home_team, is_home=True)
+    away_team_stats = get_last_match_stats(df, away_team, is_home=False)
+
+    home_stats_row = home_team_stats.to_dict()
+    away_stats_row = away_team_stats.to_dict()
+
+    wk = df['Wk'].iloc[-1] + 1
+
+    match_data = pd.DataFrame({
+        'Wk': [wk],
+        'Home': [home_team],
+        'Away': [away_team],
+        **home_stats_row,
+        **away_stats_row
+    })
+
+    home_team_encoded = label_encoder.transform([[match_data['Home'].iloc[0]]])  # Transform as a 2D array
+    away_team_encoded = label_encoder.transform([[match_data['Away'].iloc[0]]])  # Transform as a 2D array
+
+    # Convert to DataFrame with appropriate column names
+    home_encoded_df = pd.DataFrame(home_team_encoded, columns=label_encoder.get_feature_names_out(['Home_Team']))
+    away_encoded_df = pd.DataFrame(away_team_encoded, columns=label_encoder.get_feature_names_out(['Away_Team']))
+
+    # Add prefixes for clarity and drop original columns
+    match_data = pd.concat([match_data.reset_index(drop=True), home_encoded_df, away_encoded_df], axis=1)
+    match_data.drop(columns=['Home', 'Away'], inplace=True)
+
+    home_prefix = 'Home_'
+    away_prefix = 'Away_'
+    home_columns = [col for col in match_data.columns if col.startswith(home_prefix)]
+    away_columns = [col for col in match_data.columns if col.startswith(away_prefix)]
+    match_data = match_data[[
+        'Wk'] + home_columns + away_columns
+    ]
+
+
     return match_data
 
 
