@@ -18,7 +18,7 @@ sys.path.append(os.path.abspath(os.path.join('..', '..', 'data')))
 from cleanAndPrepDataFunctions import prepare_data_for_training, prepare_data_for_training_binary
 
 data = pd.read_csv('../../data/week13.csv')
-X, y, df, label_encoder = prepare_data_for_training_binary(data)
+X, y, df, label_encoder = prepare_data_for_training(data)
 
 df.to_csv(processed_data_path, index=False)
 
@@ -32,7 +32,10 @@ tf.random.set_seed(42)
 model = tf.keras.Sequential([
     tf.keras.layers.Input(shape=(X_train_scaled.shape[1],)),  # Input layer
     tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(1000, activation='relu', kernel_regularizer=regularizers.l1_l2(l1=0.01, l2=0.25)),            # Hidden layer 1
+    tf.keras.layers.Dense(1000, activation='relu', kernel_regularizer=regularizers.l1_l2(l1=0.01, l2=0.02)),            # Hidden layer 1
+    tf.keras.layers.Dense(400, activation='relu'),
+    tf.keras.layers.Dense(100, activation='relu'),
+    tf.keras.layers.Dense(50, activation='relu'), 
     tf.keras.layers.Dense(3, activation='softmax')           # Output layer (3 classes: win, draw, lose)
 ])
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.007)

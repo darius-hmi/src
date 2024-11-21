@@ -58,9 +58,14 @@ for home_team, away_team in matches_to_predict:
     prediction_proba = model.predict(match_data_scaled)
 
     # Determine the predicted class and probability
-    predicted_class = prediction_proba.argmax(axis=1)
-    predicted_label = predicted_class[0]
-    predicted_probability = prediction_proba[0, predicted_class][0]
+    prob_draw = prediction_proba[0, 0]  # Probability of draw (class 0)
+    prob_home_win = prediction_proba[0, 1]  # Probability of home win (class 1)
+    prob_away_win = prediction_proba[0, 2]  # Probability of away win (class 2)
+
+    # Find the predicted class (the class with the highest probability)
+    predicted_class = prediction_proba.argmax(axis=1)[0]  # Index of the highest probability class
+    predicted_label = predicted_class
 
     # Print the prediction results for the match
-    print(f"Prediction for {home_team} vs {away_team}: {predicted_label} with probability: {predicted_probability*100:.2f}%")
+    # Print the prediction results for the match, formatted as requested
+    print(f"{home_team} vs {away_team} - H:{prob_home_win * 100:.0f}, D:{prob_draw * 100:.0f}, A:{prob_away_win * 100:.0f}")
