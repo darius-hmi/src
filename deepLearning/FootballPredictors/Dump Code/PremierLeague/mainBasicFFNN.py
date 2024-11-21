@@ -165,11 +165,15 @@ if __name__ == "__main__":
 
     for home_team, away_team in zip(home_teams, away_teams):
         outcome_labels, predicted_probabilities = predict_match_result(model, scaler, label_encoder_home, label_encoder_away, home_stats, away_stats, home_team, away_team)
+        test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=1)
+        print(f"Final Test Loss: {test_loss:.4f}")
+        print(f"Final Test Accuracy: {test_accuracy:.4f}")
 
         print(f"Predicted probabilities for {home_team} vs. {away_team}:")
         for label, prob in zip(outcome_labels, predicted_probabilities):
             print(f"{label}: {prob:.2f}")
 
+    
 
 
 

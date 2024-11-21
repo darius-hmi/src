@@ -7,14 +7,10 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join('..', '..', 'data')))
-from cleanAndPrepDataFunctions import apply_one_hot_encoder, drop_seaon_col, apply_scoreToResult_01minus1, apply_scoreToResult_012, apply_label_encoder, order_features_and_prepare_target
+from cleanAndPrepDataFunctions import prepare_data_for_training, prepare_data_for_training_binary
 
 data = pd.read_csv('../../data/week12.csv')
-data, label_encoder = apply_label_encoder(data)
-data = drop_seaon_col(data)
-data = apply_scoreToResult_012(data)
-
-X, y, df = order_features_and_prepare_target(data)
+X, y, df, label_encoder = prepare_data_for_training_binary(data)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 scaler = StandardScaler()
@@ -24,7 +20,7 @@ X_test_scaled = scaler.transform(X_test)
 svm_model = SVC(kernel='rbf', class_weight='balanced', random_state=42)
 param_grid = {
     'C': [1, 100, 1000, 10000, 100000, 1000000],  # Regularization parameter
-    'gamma': [0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 1],  # Kernel coefficient
+    'gamma': [0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 1, 'scale', 'auto'],  # Kernel coefficient
     'kernel': ['rbf'],  # Kernel type
     'class_weight': ['balanced', None],  # Handle class imbalance
 }

@@ -14,14 +14,10 @@ processed_data_path = os.path.join(current_dir, 'processed_data.csv')
 label_encoder_path = os.path.join(current_dir, 'label_encoder.joblib')
 
 sys.path.append(os.path.abspath(os.path.join('..', '..', 'data')))
-from cleanAndPrepDataFunctions import apply_one_hot_encoder, drop_seaon_col, apply_scoreToResult_01minus1, apply_scoreToResult_012, apply_label_encoder, order_features_and_prepare_target
+from cleanAndPrepDataFunctions import prepare_data_for_training, prepare_data_for_training_binary
 
 data = pd.read_csv('../../data/week12.csv')
-data, label_encoder = apply_label_encoder(data)
-data = drop_seaon_col(data)
-data = apply_scoreToResult_012(data)
-
-X, y, df = order_features_and_prepare_target(data)
+X, y, df, label_encoder = prepare_data_for_training_binary(data)
 
 df.to_csv(processed_data_path, index=False)
 
@@ -31,7 +27,7 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-svm_model = SVC(kernel='rbf', C=10000, gamma=0.000001 , random_state=42)
+svm_model = SVC(kernel='rbf', C=100000, gamma=0.0000001,probability=True, random_state=42)
 svm_model.fit(X_train_scaled, y_train)
 
 joblib.dump(svm_model, model_path)
@@ -54,3 +50,27 @@ print(f"SVM Model - Test Accuracy: {test_accuracy}")
 print("Test Classification Report:")
 print(classification_report(y_test, y_pred))
 
+
+
+#pretty good even for classification
+# Training Classification Report:
+#               precision    recall  f1-score   support
+
+#            A       0.80      0.86      0.83       531
+#            D       0.68      0.49      0.57       360
+
+#     accuracy                           0.79      1608
+#    macro avg       0.77      0.75      0.75      1608
+# weighted avg       0.78      0.79      0.78      1608
+
+# SVM Model - Test Accuracy: 0.7039800995024875
+# Test Classification Report:
+#               precision    recall  f1-score   support
+
+#            A       0.74      0.78      0.76       130
+#            D       0.54      0.37      0.44       102
+#            H       0.74      0.84      0.79       170
+
+#     accuracy                           0.70       402
+#    macro avg       0.67      0.67      0.66       402
+# weighted avg       0.69      0.70      0.69       402

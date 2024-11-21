@@ -53,7 +53,6 @@ def fetch_and_process_data(season):
             table1['Result'] = table1['Score'].apply(determine_result)
             score_index = table1.columns.get_loc('Score')
             table1.insert(score_index + 1, 'Result', table1.pop('Result'))
-            table1 = table1.drop(columns=['Score'])
         table1['Season'] = season
     else:
         print(f"There are more than one table on the Scores Page for season {season}.")
@@ -208,96 +207,153 @@ for idx, row in final_table.iterrows():
 
 
 
-# Initialize dictionaries to store head-to-head points for each matchup
-h2h_points = {}
+def get_goals_from_score(score):
+    try:
+        score = score.replace('–', '-').replace('—', '-').replace('−', '-')
+        home_score, away_score = map(int, score.split('-'))
+        return home_score, away_score
+    except Exception as e:
+        print(f"Error processing score '{score}': {e}")
+        return None, None
 
-# Function to update the H2H points between two teams
-def update_h2h_points(home_team, away_team, home_points, away_points):
-    if (home_team, away_team) not in h2h_points:
-        h2h_points[(home_team, away_team)] = [0, 0]  # Initialize both teams with 0 points
-    h2h_points[(home_team, away_team)][0] += home_points
-    h2h_points[(home_team, away_team)][1] += away_points
+# Initialize a dictionary to keep track of the last 3 games' goals for each team
+team_goals = {}
 
-# Add columns for Home_H2H and Away_H2H
-final_table['Home_H2H'] = 0  # Initial H2H points for home team
-final_table['Away_H2H'] = 0  # Initial H2H points for away team
+# Example of how you might load your data
+# Add new columns to store the total goals scored and conceded in the last 3 games
+final_table['Home_Goals_Last_3'] = 0
+final_table['Away_Goals_Last_3'] = 0
+final_table['Home_Goals_Conceded_Last_3'] = 0
+final_table['Away_Goals_Conceded_Last_3'] = 0
 
-# Iterate over each row (match) in the DataFrame
+# Iterate over each row in the dataframe (match data)
 for idx, row in final_table.iterrows():
     home_team = row['Home']
     away_team = row['Away']
-    result = row['Result']  # Full-time result (H, A, D)
+    score = row['Score']  # Full-time score, e.g., '2-1'
 
-    # Initialize form for teams if they are not already in the dictionary
-    if (home_team, away_team) not in h2h_points:
-        h2h_points[(home_team, away_team)] = [0, 0]  # Initialize head-to-head points if teams have not faced
+    # Get the number of goals scored by both teams
+    home_goals, away_goals = get_goals_from_score(score)
 
-    # Get current H2H points between these two teams
-    home_h2h = h2h_points[(home_team, away_team)][0]
-    away_h2h = h2h_points[(home_team, away_team)][1]
+    # Initialize the goal list if it's the first match for the teams
+    if home_team not in team_goals:
+        team_goals[home_team] = {'scored': [], 'conceded': []}
+    if away_team not in team_goals:
+        team_goals[away_team] = {'scored': [], 'conceded': []}
 
-    # Set the H2H values in the DataFrame
-    final_table.at[idx, 'Home_H2H'] = home_h2h
-    final_table.at[idx, 'Away_H2H'] = away_h2h
+    # Append the goals scored and conceded in the current match
+    team_goals[home_team]['scored'].append(home_goals)
+    team_goals[away_team]['scored'].append(away_goals)
+    team_goals[home_team]['conceded'].append(away_goals)
+    team_goals[away_team]['conceded'].append(home_goals)
 
-    # Calculate points for the current match
-    home_points = get_points(result, is_home=True)
-    away_points = get_points(result, is_home=False)
+    # For home team: calculate the total goals scored in the last 3 games excluding the current game
+    if len(team_goals[home_team]['scored']) > 1:  # If there are at least 2 games, calculate
+        final_table.at[idx, 'Home_Goals_Last_3'] = sum(team_goals[home_team]['scored'][-4:-1])  # sum last 3 excluding current game
+    if len(team_goals[home_team]['conceded']) > 1:  # If there are at least 2 games, calculate
+        final_table.at[idx, 'Home_Goals_Conceded_Last_3'] = sum(team_goals[home_team]['conceded'][-4:-1])  # sum last 3 excluding current game
 
-    # Update the head-to-head points between the home and away team
-    update_h2h_points(home_team, away_team, home_points, away_points)
+    # For away team: calculate the total goals scored in the last 3 games excluding the current game
+    if len(team_goals[away_team]['scored']) > 1:  # If there are at least 2 games, calculate
+        final_table.at[idx, 'Away_Goals_Last_3'] = sum(team_goals[away_team]['scored'][-4:-1])  # sum last 3 excluding current game
+    if len(team_goals[away_team]['conceded']) > 1:  # If there are at least 2 games, calculate
+        final_table.at[idx, 'Away_Goals_Conceded_Last_3'] = sum(team_goals[away_team]['conceded'][-4:-1])  # sum last 3 excluding current game
+
+
+# Optionally, save the modified data to a new CSV file
+#Commented the below as it is not really helping
+
+
+# # Initialize dictionaries to store head-to-head points for each matchup
+# h2h_points = {}
+
+# # Function to update the H2H points between two teams
+# def update_h2h_points(home_team, away_team, home_points, away_points):
+#     if (home_team, away_team) not in h2h_points:
+#         h2h_points[(home_team, away_team)] = [0, 0]  # Initialize both teams with 0 points
+#     h2h_points[(home_team, away_team)][0] += home_points
+#     h2h_points[(home_team, away_team)][1] += away_points
+
+# # Add columns for Home_H2H and Away_H2H
+# final_table['Home_H2H'] = 0  # Initial H2H points for home team
+# final_table['Away_H2H'] = 0  # Initial H2H points for away team
+
+# # Iterate over each row (match) in the DataFrame
+# for idx, row in final_table.iterrows():
+#     home_team = row['Home']
+#     away_team = row['Away']
+#     result = row['Result']  # Full-time result (H, A, D)
+
+#     # Initialize form for teams if they are not already in the dictionary
+#     if (home_team, away_team) not in h2h_points:
+#         h2h_points[(home_team, away_team)] = [0, 0]  # Initialize head-to-head points if teams have not faced
+
+#     # Get current H2H points between these two teams
+#     home_h2h = h2h_points[(home_team, away_team)][0]
+#     away_h2h = h2h_points[(home_team, away_team)][1]
+
+#     # Set the H2H values in the DataFrame
+#     final_table.at[idx, 'Home_H2H'] = home_h2h
+#     final_table.at[idx, 'Away_H2H'] = away_h2h
+
+#     # Calculate points for the current match
+#     home_points = get_points(result, is_home=True)
+#     away_points = get_points(result, is_home=False)
+
+#     # Update the head-to-head points between the home and away team
+#     update_h2h_points(home_team, away_team, home_points, away_points)
 
 
 
 
 
-# Initialize dictionary to store head-to-head points for any matchup (regardless of home/away)
-h2h2_points = {}
+# # Initialize dictionary to store head-to-head points for any matchup (regardless of home/away)
+# h2h2_points = {}
 
-# Function to update H2H points between two teams, considering both home and away matchups
-def update_h2h2_points(team_a, team_b, points_a, points_b):
-    if (team_a, team_b) not in h2h2_points and (team_b, team_a) not in h2h2_points:
-        # Initialize the head-to-head record for both teams if they haven't faced each other
-        h2h2_points[(team_a, team_b)] = [0, 0]  # Points for team_a and team_b
-    # If the matchup already exists in either direction, sum points in both cases
-    if (team_a, team_b) in h2h2_points:
-        h2h2_points[(team_a, team_b)][0] += points_a
-        h2h2_points[(team_a, team_b)][1] += points_b
-    else:
-        h2h2_points[(team_b, team_a)][0] += points_b
-        h2h2_points[(team_b, team_a)][1] += points_a
+# # Function to update H2H points between two teams, considering both home and away matchups
+# def update_h2h2_points(team_a, team_b, points_a, points_b):
+#     if (team_a, team_b) not in h2h2_points and (team_b, team_a) not in h2h2_points:
+#         # Initialize the head-to-head record for both teams if they haven't faced each other
+#         h2h2_points[(team_a, team_b)] = [0, 0]  # Points for team_a and team_b
+#     # If the matchup already exists in either direction, sum points in both cases
+#     if (team_a, team_b) in h2h2_points:
+#         h2h2_points[(team_a, team_b)][0] += points_a
+#         h2h2_points[(team_a, team_b)][1] += points_b
+#     else:
+#         h2h2_points[(team_b, team_a)][0] += points_b
+#         h2h2_points[(team_b, team_a)][1] += points_a
 
-# Add columns for Home_H2H and Away_H2H
-final_table['Home_H2H2'] = 0  # Head-to-head points for the home team
-final_table['Away_H2H2'] = 0  # Head-to-head points for the away team
+# # Add columns for Home_H2H and Away_H2H
+# final_table['Home_H2H2'] = 0  # Head-to-head points for the home team
+# final_table['Away_H2H2'] = 0  # Head-to-head points for the away team
 
-# Iterate over each row (match) in the DataFrame
-for idx, row in final_table.iterrows():
-    home_team = row['Home']
-    away_team = row['Away']
-    result = row['Result']  # Full-time result (H, A, D)
+# # Iterate over each row (match) in the DataFrame
+# for idx, row in final_table.iterrows():
+#     home_team = row['Home']
+#     away_team = row['Away']
+#     result = row['Result']  # Full-time result (H, A, D)
 
-    # Determine points for the home and away team for the current match
-    home_points2 = get_points(result, is_home=True)
-    away_points2 = get_points(result, is_home=False)
+#     # Determine points for the home and away team for the current match
+#     home_points2 = get_points(result, is_home=True)
+#     away_points2 = get_points(result, is_home=False)
 
-    # Get previous H2H points between these two teams (in any order)
-    if (home_team, away_team) in h2h2_points:
-        home_h2h2 = h2h2_points[(home_team, away_team)][0]
-        away_h2h2 = h2h2_points[(home_team, away_team)][1]
-    elif (away_team, home_team) in h2h2_points:
-        home_h2h2 = h2h2_points[(away_team, home_team)][1]
-        away_h2h2 = h2h2_points[(away_team, home_team)][0]
-    else:
-        home_h2h2 = 0
-        away_h2h2 = 0
+#     # Get previous H2H points between these two teams (in any order)
+#     if (home_team, away_team) in h2h2_points:
+#         home_h2h2 = h2h2_points[(home_team, away_team)][0]
+#         away_h2h2 = h2h2_points[(home_team, away_team)][1]
+#     elif (away_team, home_team) in h2h2_points:
+#         home_h2h2 = h2h2_points[(away_team, home_team)][1]
+#         away_h2h2 = h2h2_points[(away_team, home_team)][0]
+#     else:
+#         home_h2h2 = 0
+#         away_h2h2 = 0
 
-    # Set the H2H values in the DataFrame for the current row
-    final_table.at[idx, 'Home_H2H2'] = home_h2h2
-    final_table.at[idx, 'Away_H2H2'] = away_h2h2
+#     # Set the H2H values in the DataFrame for the current row
+#     final_table.at[idx, 'Home_H2H2'] = home_h2h2
+#     final_table.at[idx, 'Away_H2H2'] = away_h2h2
 
-    # Update the head-to-head points between these two teams
-    update_h2h2_points(home_team, away_team, home_points2, away_points2)
+#     # Update the head-to-head points between these two teams
+#     update_h2h2_points(home_team, away_team, home_points2, away_points2)
 
 
 

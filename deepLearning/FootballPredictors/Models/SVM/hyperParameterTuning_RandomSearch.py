@@ -28,11 +28,11 @@ svm_model = SVC(random_state=42)
 
 # Define the parameter grid to search
 param_dist = {
-    'C': np.logspace(-1, 1, 5),  # A smaller range
-    'gamma': ['scale', 'auto'] + np.logspace(-1, 1, 5).tolist(),  # A smaller range
-    'kernel': ['rbf'],  # Use only 'rbf' kernel to reduce combinations
-    'degree': [3],  # Only relevant for polynomial kernels
-    'coef0': [0],  # For polynomial or sigmoid kernels, can restrict
+    'C': np.logspace(-3, 0, 6),  # A smaller range
+    'gamma': ['scale', 'auto'] + np.logspace(-3, 3, 6).tolist(),  # A smaller range
+    'kernel': ['linear'],  # Use only 'rbf' kernel to reduce combinations
+    'degree': [1,2],  # Only relevant for polynomial kernels
+    'coef0': [1,2,3,4,5,6],  # For polynomial or sigmoid kernels, can restrict
 }
 
 # Initialize RandomizedSearchCV

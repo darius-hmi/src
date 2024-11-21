@@ -1,8 +1,11 @@
 import pandas as pd
 import joblib
 import os
+import sys
 
 
+sys.path.append(os.path.abspath(os.path.join('..', '..', 'data')))
+from cleanAndPrepDataFunctions import apply_form_and_last3_goals, prepare_match_data_hack, prepare_match_data
 # Load the saved model and scaler
 current_dir = os.path.dirname(os.path.abspath(__file__))
 processed_data_path = os.path.join(current_dir, 'processed_data.csv') 
@@ -10,71 +13,55 @@ data = pd.read_csv(processed_data_path)
 model_path = os.path.join(current_dir, 'svm_model.joblib')
 scaler_path = os.path.join(current_dir, 'scaler.joblib')
 label_encoder_path = os.path.join(current_dir, 'label_encoder.joblib')
-
+data_hack = pd.read_csv('../../data/week12.csv')
 svm_model = joblib.load(model_path)
 scaler = joblib.load(scaler_path)
 label_encoder = joblib.load(label_encoder_path)
 
 
-def get_last_match_stats(df, team, is_home):
-    """
-    Get the last match stats for a team, formatted to match their position (Home/Away) in the new match.
-    """
-    team_stats = df[(df['Home'] == team) | (df['Away'] == team)]
-    
-    # Get the most recent match (last row in the filtered dataframe)
-    last_match_stats = team_stats.iloc[-1]
-    
-    # Select the stats based on the last match and align with the desired prefix
-    if last_match_stats['Home'] == team:
-        # Team was Home in the last match
-        stats = last_match_stats[[col for col in last_match_stats.index if col.startswith('Home_')]]
-        if is_home:
-            # If the team is Home in the new match, keep the Home_ prefix
-            return stats
-        else:
-            # If the team is Away in the new match, replace Home_ with Away_
-            stats.index = [col.replace('Home_', 'Away_') for col in stats.index]
-            return stats
-    else:
-        # Team was Away in the last match
-        stats = last_match_stats[[col for col in last_match_stats.index if col.startswith('Away_')]]
-        if is_home:
-            # If the team is Home in the new match, replace Away_ with Home_
-            stats.index = [col.replace('Away_', 'Home_') for col in stats.index]
-            return stats
-        else:
-            # If the team is Away in the new match, keep the Away_ prefix
-            return stats
-    
+matches_to_predict = [
+    ('Leicester City', 'Chelsea'),
+    ('Arsenal', 'Nott\'ham Forest'),
+    ('Aston Villa', 'Crystal Palace'),
+    ('Bournemouth', 'Brighton'),
+    ('Everton', 'Brentford'),
+    ('Fulham', 'Wolves'),
+    ('Manchester City', 'Tottenham'),
+    ('Southampton', 'Liverpool'),
+    ('Ipswich Town', 'Manchester Utd'),
+    ('Newcastle Utd', 'West Ham')
+    # Add more matches as needed
+]
 
-def prepare_match_data(df, home_team, away_team):
-    home_team_encoded = label_encoder.transform([home_team])[0]
-    away_team_encoded = label_encoder.transform([away_team])[0]
+columns_to_update = ['Home_Form', 'Away_Form', 'Home_Form2', 'Away_Form2', 'Home_Goals_Last_3', 'Away_Goals_Last_3', 'Home_Goals_Conceded_Last_3', 'Away_Goals_Conceded_Last_3']
 
-    home_team_stats = get_last_match_stats(df, home_team_encoded, is_home=True)
-    away_team_stats = get_last_match_stats(df, away_team_encoded, is_home=False)
+# Iterate over the matches
+for home_team, away_team in matches_to_predict:
+    # Prepare the new match data
+    match_data_hack = prepare_match_data_hack(data_hack, home_team, away_team)
+    data_with_new_match = pd.concat([data_hack, match_data_hack], ignore_index=True)
 
-    home_stats_row = home_team_stats.to_dict()
-    away_stats_row = away_team_stats.to_dict()
+    # Apply forms and goals
+    data_with_new_match = apply_form_and_last3_goals(data_with_new_match)
+    updated_match_data = data_with_new_match.iloc[-1:]
 
-    wk = df['Wk'].iloc[-1] + 1
+    # Prepare the match data for prediction
+    match_data = prepare_match_data(data, home_team, away_team, label_encoder)
 
-    match_data = pd.DataFrame({
-        'Wk': [wk],
-        'Home': [home_team_encoded],
-        'Away': [away_team_encoded],
-        **home_stats_row,
-        **away_stats_row
-    })
-    return match_data
+    # Update the relevant columns with the newly computed values
+    for col in columns_to_update:
+        match_data.at[match_data.index[-1], col] = updated_match_data.iloc[0][col]
 
+    # Scale the data and make predictions
+    match_data_scaled = scaler.transform(match_data)
+    prediction = svm_model.predict(match_data_scaled)
+    prediction_proba = svm_model.predict_proba(match_data_scaled)
 
-home_team = 'Newcastle Utd'
-away_team = 'West Ham'
+    # Determine the predicted class and probability
+    predicted_class = prediction_proba.argmax(axis=1)
+    class_labels = svm_model.classes_
+    predicted_label = class_labels[predicted_class][0]
+    predicted_probability = prediction_proba[0, predicted_class][0]
 
-
-match_data = prepare_match_data(data, home_team, away_team)
-match_data_scaled = scaler.transform(match_data)
-prediction = svm_model.predict(match_data_scaled)
-print(f"Prediction for {home_team} vs {away_team}: {prediction}")
+    # Print the prediction results for the match
+    print(f"Prediction for {home_team} vs {away_team}: {predicted_label} with probability: {predicted_probability*100:.2f}%")
