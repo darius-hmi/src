@@ -9,11 +9,9 @@ from cleanAndPrepDataFunctions import apply_form_and_last3_goals, prepare_match_
 # Load the saved model and scaler
 current_dir = os.path.dirname(os.path.abspath(__file__))
 processed_data_path = os.path.join(current_dir, 'processed_data.csv') 
-data = pd.read_csv(processed_data_path)
 model_path = os.path.join(current_dir, 'nn_model.joblib')
 scaler_path = os.path.join(current_dir, 'scaler.joblib')
 label_encoder_path = os.path.join(current_dir, 'label_encoder.joblib')
-data_hack = pd.read_csv('../../data/week12.csv')
 model = joblib.load(model_path)
 scaler = joblib.load(scaler_path)
 label_encoder = joblib.load(label_encoder_path)
@@ -37,6 +35,9 @@ columns_to_update = ['Home_Form', 'Away_Form', 'Home_Form2', 'Away_Form2', 'Home
 
 # Iterate over the matches
 for home_team, away_team in matches_to_predict:
+    data_hack = pd.read_csv('../../data/week13.csv')
+    data = pd.read_csv(processed_data_path)
+
     # Prepare the new match data
     match_data_hack = prepare_match_data_hack(data_hack, home_team, away_team)
     data_with_new_match = pd.concat([data_hack, match_data_hack], ignore_index=True)
@@ -51,6 +52,7 @@ for home_team, away_team in matches_to_predict:
     # Update the relevant columns with the newly computed values
     for col in columns_to_update:
         match_data.at[match_data.index[-1], col] = updated_match_data.iloc[0][col]
+
 
     # Scale the data and make predictions
     match_data_scaled = scaler.transform(match_data)

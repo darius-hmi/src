@@ -32,18 +32,17 @@ tf.random.set_seed(42)
 model = tf.keras.Sequential([
     tf.keras.layers.Input(shape=(X_train_scaled.shape[1],)),  # Input layer
     tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dense(1000, activation='relu', kernel_regularizer=regularizers.l1_l2(l1=0.01, l2=0.02)),            # Hidden layer 1
-    tf.keras.layers.Dense(400, activation='relu'),
+    tf.keras.layers.Dense(1000, activation='relu', kernel_regularizer=regularizers.l1_l2(l1=0.01, l2=0.045)),            # Hidden layer 1
+    tf.keras.layers.Dense(400, activation='relu', kernel_regularizer=regularizers.l1_l2(l1=0, l2=0.02)),
     tf.keras.layers.Dense(100, activation='relu'),
-    tf.keras.layers.Dense(50, activation='relu'), 
     tf.keras.layers.Dense(3, activation='softmax')           # Output layer (3 classes: win, draw, lose)
 ])
-optimizer = tf.keras.optimizers.Adam(learning_rate=0.007)
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
 model.compile(optimizer=optimizer,
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-history = model.fit(X_train_scaled, y_train, epochs=50, batch_size=32, validation_split=0.2, verbose=1)
+history = model.fit(X_train_scaled, y_train, epochs=60, batch_size=32, validation_split=0.2, verbose=1)
 
 test_loss, test_accuracy = model.evaluate(X_test_scaled, y_test, verbose=1)
 
