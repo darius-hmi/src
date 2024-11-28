@@ -37,12 +37,14 @@ def order_features_and_prepare_target(df):
     away_prefix = 'Away_'
     home_columns = [col for col in df.columns if col.startswith(home_prefix)]
     away_columns = [col for col in df.columns if col.startswith(away_prefix)]
+    # weights = exponential_decay_weight(df, decay_factor=0.2)
+    # for col in home_columns + away_columns:
+    #     df[col] = df[col] * weights
     X = df[[
         'Wk', 'Home', 'Away'] + home_columns + away_columns
     ]
     y = df['Result']
     df = pd.concat([X, y], axis=1)
-
     return X, y, df
 
 def order_features_and_prepare_target_oneHot(df):
@@ -165,7 +167,6 @@ def inverse_one_hot_encoder(df, label_encoder):
 
 def prepare_data_for_training(df):
     df, label_encoder = apply_label_encoder(df)
-    df = drop_seaon_col(df)
     df = apply_scoreToResult_012(df)
     X, y, df = order_features_and_prepare_target(df)
 
@@ -444,3 +445,15 @@ def apply_form_and_last3_goals(df):
         df.at[last_row_idx, 'Away_Goals_Conceded_Last_3'] = sum(team_goals[away_team]['conceded'][-3:])
     
     return df
+
+def exponential_decay_weight(df, decay_factor):
+    """Apply exponential decay to the season weights."""
+
+    df['Season_Year'] = df['Season'].apply(extract_start_year)
+    max_season = df['Season_Year'].max()  # Determine the most recent season
+    weights = np.exp(-decay_factor * (max_season - df['Season_Year']))
+    return weights
+
+def extract_start_year(season_str):
+    """Extract the starting year from the season string in 'YYYY/YYYY' format."""
+    return int(season_str.split('/')[0])

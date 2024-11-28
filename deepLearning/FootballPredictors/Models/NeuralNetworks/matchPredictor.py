@@ -18,24 +18,25 @@ label_encoder = joblib.load(label_encoder_path)
 
 
 matches_to_predict = [
-    ('Leicester City', 'Chelsea'),
+    ('Newcastle Utd', 'West Ham'),
+    ('Ipswich Town', 'Manchester Utd'),
+    ('Southampton', 'Liverpool'),
+    ('Manchester City', 'Tottenham'),
     ('Arsenal', 'Nott\'ham Forest'),
     ('Aston Villa', 'Crystal Palace'),
     ('Bournemouth', 'Brighton'),
-    ('Everton', 'Brentford'),
+    ('Brentford', 'Everton'),
     ('Fulham', 'Wolves'),
-    ('Manchester City', 'Tottenham'),
-    ('Southampton', 'Liverpool'),
-    ('Ipswich Town', 'Manchester Utd'),
-    ('Newcastle Utd', 'West Ham')
+    ('Leicester City', 'Chelsea')
     # Add more matches as needed
 ]
-
+# remove the columns below and remove line containing apply_form_and_last3_goals from the for loop below to make the stats more produciton friendly
 columns_to_update = ['Home_Form', 'Away_Form', 'Home_Form2', 'Away_Form2', 'Home_Goals_Last_3', 'Away_Goals_Last_3', 'Home_Goals_Conceded_Last_3', 'Away_Goals_Conceded_Last_3']
 
 # Iterate over the matches
 for home_team, away_team in matches_to_predict:
-    data_hack = pd.read_csv('../../data/week13.csv')
+    data_hack = pd.read_csv('../../data/week13New.csv')
+    #data_hack = data_hack.drop(columns=['Home_Form', 'Away_Form', 'Home_Form2', 'Away_Form2', 'Home_Goals_Last_3', 'Away_Goals_Last_3', 'Home_Goals_Conceded_Last_3', 'Away_Goals_Conceded_Last_3'])
     data = pd.read_csv(processed_data_path)
 
     # Prepare the new match data
@@ -54,6 +55,8 @@ for home_team, away_team in matches_to_predict:
         match_data.at[match_data.index[-1], col] = updated_match_data.iloc[0][col]
 
 
+    columns_to_modify = ['Home_Form', 'Away_Form', 'Home_Form2', 'Away_Form2', 'Home_Goals_Last_3', 'Away_Goals_Last_3', 'Home_Goals_Conceded_Last_3', 'Away_Goals_Conceded_Last_3']
+    match_data[columns_to_modify] = match_data[columns_to_modify] * 0.5
     # Scale the data and make predictions
     match_data_scaled = scaler.transform(match_data)
     prediction = model.predict(match_data_scaled)
@@ -62,12 +65,9 @@ for home_team, away_team in matches_to_predict:
     # Determine the predicted class and probability
     prob_draw = prediction_proba[0, 0]  # Probability of draw (class 0)
     prob_home_win = prediction_proba[0, 1]  # Probability of home win (class 1)
-    prob_away_win = prediction_proba[0, 2]  # Probability of away win (class 2)
 
     # Find the predicted class (the class with the highest probability)
-    predicted_class = prediction_proba.argmax(axis=1)[0]  # Index of the highest probability class
-    predicted_label = predicted_class
 
     # Print the prediction results for the match
     # Print the prediction results for the match, formatted as requested
-    print(f"{home_team} vs {away_team} - H:{prob_home_win * 100:.0f}, D:{prob_draw * 100:.0f}, A:{prob_away_win * 100:.0f}")
+    print(f"{home_team} vs {away_team} - H:{prob_home_win * 100:.0f}, A or D:{prob_draw * 100:.0f}")

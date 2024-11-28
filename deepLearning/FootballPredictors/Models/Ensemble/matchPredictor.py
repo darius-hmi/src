@@ -13,7 +13,7 @@ data = pd.read_csv(processed_data_path)
 model_path = os.path.join(current_dir, 'model.joblib')
 scaler_path = os.path.join(current_dir, 'scaler.joblib')
 label_encoder_path = os.path.join(current_dir, 'label_encoder.joblib')
-data_hack = pd.read_csv('../../data/week12.csv')
+data_hack = pd.read_csv('../../data/week13New.csv')
 
 model = joblib.load(model_path)
 scaler = joblib.load(scaler_path)
