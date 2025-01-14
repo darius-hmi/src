@@ -87,6 +87,7 @@ def order_features_and_prepare_target(df):
 
 def prepare_for_training(df):
     df = df[df['status'] == 'complete']
+    
     df = df.drop(columns=
                    ["date_GMT", "status", "home_team_goal_count", "away_team_goal_count", "home_team_goal_count_half_time", "away_team_goal_count_half_time",
                     "odds_ft_home_team_win", "odds_ft_draw", "odds_ft_away_team_win", "home_team_season", "away_team_season", "total_goal_count", "total_goals_at_half_time"
@@ -146,7 +147,7 @@ def fill_missing_data_prediction(trainData, predictionData):
 
 
 
-data = pd.read_csv('../Data/final.csv')
+data = pd.read_csv('../Data/finalPlus.csv')
 
 dataAfterCleaningBeforeTrain, label_encoder = order_features_and_prepare_target(data)
 
@@ -171,7 +172,7 @@ lr_scheduler = tf.keras.callbacks.ReduceLROnPlateau(
 )
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Input(shape=(X_train_scaled.shape[1],)), 
+    tf.keras.layers.Input(shape=(X_train_scaled.shape[1],)),  # Input layer
     tf.keras.layers.Dense(100, activation='relu', kernel_initializer="he_normal", kernel_regularizer=regularizers.l1_l2(l1=0.01, l2=0.1)),
     tf.keras.layers.BatchNormalization(),
     tf.keras.layers.Dropout(0.3),
@@ -184,7 +185,7 @@ model = tf.keras.Sequential([
     tf.keras.layers.Dense(3, activation='softmax')
 ])
 
-optimizer = tf.keras.optimizers.SGD(learning_rate=0.001, momentum=0.9,
+optimizer = tf.keras.optimizers.SGD(learning_rate=0.0001, momentum=0.9,
                                     nesterov=True)
 
 model.compile(optimizer=optimizer,
@@ -194,7 +195,7 @@ model.compile(optimizer=optimizer,
 
 
 history = model.fit(X_train_scaled, y_train, 
-                    epochs=100, 
+                    epochs=150, 
                     validation_split=0.2, 
                     callbacks=[early_stopping, lr_scheduler])  
 
@@ -218,7 +219,7 @@ print("Test Classification Report:")
 print(classification_report(y_test, y_test_pred))
 
 
-pred = get_clean_prediction_data(dataAfterCleaningBeforeTrain, week=16, season='2024/2025')
+pred = get_clean_prediction_data(dataAfterCleaningBeforeTrain, week=18, season='2024/2025')
 
 finalpred = fill_missing_data_prediction(X, pred)
 

@@ -147,7 +147,7 @@ def fill_missing_data_prediction(trainData, predictionData):
     return predictionData
 
 
-data = pd.read_csv('../Data/final.csv')
+data = pd.read_csv('../Data/finalPlus.csv')
 
 dataAfterCleaningBeforeTrain, label_encoder = order_features_and_prepare_target(data)
 
@@ -188,7 +188,7 @@ print(f"SVM Model - Test Accuracy: {test_accuracy}")
 print("Test Classification Report:")
 print(classification_report(y_test, y_pred))
 
-pred = get_clean_prediction_data(dataAfterCleaningBeforeTrain, week=16, season='2024/2025')
+pred = get_clean_prediction_data(dataAfterCleaningBeforeTrain, week=17, season='2024/2025')
 
 finalpred = fill_missing_data_prediction(X, pred)
 

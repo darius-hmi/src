@@ -159,7 +159,7 @@ rnd_clf = RandomForestClassifier(n_estimators=512, max_leaf_nodes=74, max_depth=
 rnd_clf.fit(X_train, y_train)
 
 
-pred = get_clean_prediction_data(dataAfterCleaningBeforeTrain, week=16, season='2024/2025')
+pred = get_clean_prediction_data(dataAfterCleaningBeforeTrain, week=18, season='2024/2025')
 
 finalpred = fill_missing_data_prediction(X, pred)
 

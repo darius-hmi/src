@@ -146,7 +146,7 @@ def fill_missing_data_prediction(trainData, predictionData):
         #         df.at[index, 'total_goal_count'] = away_goals.mean()
     return predictionData
 
-data = pd.read_csv('../Data/final.csv')
+data = pd.read_csv('../Data/finalPlus.csv')
 
 dataAfterCleaningBeforeTrain, label_encoder = order_features_and_prepare_target(data)
 
