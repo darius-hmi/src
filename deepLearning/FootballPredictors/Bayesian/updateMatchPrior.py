@@ -105,7 +105,9 @@ accuracy = (matches['actual_result'] == matches['predicted_result']).mean() * 10
 
 print(f"Accuracy: {accuracy:.2f}%")
 
-
+matches['random_result'] = np.random.choice(['H', 'A', 'D'], size=len(matches))
+random_accuracy = (matches['random_result'] == matches['actual_result']).mean() * 100
+print(f"Random prediction accuracy: {random_accuracy:.2f}%")
 
 
 # matches['homeAlpha'] = 0.0
